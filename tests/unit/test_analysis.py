@@ -224,6 +224,7 @@ class CoreAndAnalysisTests(unittest.TestCase):
         self.assertAlmostEqual(result.total_descent_time_s, expected_duration, places=9)
         self.assertAlmostEqual(result.total_estimated_drift_m, expected_drift, places=9)
         self.assertEqual(result.display_metrics["sizing_available"], True)
+        self.assertIn("MANUAL_DENSITY_OVERRIDE_ACTIVE", [warning.code for warning in analyzed.warnings])
 
     def test_single_analysis_two_layer_drift_splits_above_and_below_deployment(self) -> None:
         configuration = make_single_configuration()

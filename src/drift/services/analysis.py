@@ -13,6 +13,7 @@ from drift.core.sizing import (
     recommended_diameter_m,
     theoretical_diameter_m,
 )
+from drift.core.warnings import generate_configuration_warnings
 from drift.models import (
     AnalysisResult,
     CatalogueItem,
@@ -166,12 +167,15 @@ def _analyze_single_configuration(
             "drift_available": True,
         },
     )
-
-    return replace(
+    analyzed_configuration = replace(
         configuration,
         parachutes=[analyzed_parachute],
         analysis_results=analysis_result,
-        warnings=list(configuration.warnings),
+        warnings=[],
+    )
+    return replace(
+        analyzed_configuration,
+        warnings=generate_configuration_warnings(analyzed_configuration, catalogue_items),
     )
 
 
@@ -292,15 +296,18 @@ def _analyze_dual_configuration(
             "drift_available": True,
         },
     )
-
-    return replace(
+    analyzed_configuration = replace(
         configuration,
         parachutes=[
             updated_parachutes[parachute.parachute_id]
             for parachute in configuration.parachutes
         ],
         analysis_results=analysis_result,
-        warnings=list(configuration.warnings),
+        warnings=[],
+    )
+    return replace(
+        analyzed_configuration,
+        warnings=generate_configuration_warnings(analyzed_configuration, catalogue_items),
     )
 
 
