@@ -1,38 +1,23 @@
 # GU Rocketry
 
-This repository now treats DRIFT as the active recovery-systems application.
+GU Rocketry is the umbrella repository for rocketry software and analysis tools, organized by engineering domain first and then by tool.
 
-`DRIFT` stands for `Deployment and Recovery Integrated Flight Tool`. The canonical implementation lives under `src/drift/`.
+## Repository Structure
 
-## Active Implementation
+- `recovery-systems/`
+  - recovery-system tools and analyses
+  - active tool: `recovery-systems/drift/`
+- `propulsion/`
+  - reserved for future propulsion tools
 
-- `src/drift/`
-  - active DRIFT application package
-  - canonical implementation for recovery-system modeling, analysis, warnings, comparison, visuals, and Markdown export
-- `data/`
-  - local curated parachute catalogue used by DRIFT
-- `tests/`
-  - unit and acceptance coverage for DRIFT
-- `docs/`
-  - DRIFT MVP and schema notes
+## Active Tool
 
-## Prototype Archive
+- `recovery-systems/drift/`
+  - `DRIFT` (`Deployment and Recovery Integrated Flight Tool`)
+  - desktop PySide6 application for recovery-system design, analysis, comparison, visuals, and Markdown export
 
-- `recovery-systems/parachute-area/`
-  - archived prototype/reference-only parachute sizing tool
-  - not the active implementation path
-  - retained for historical reference only
+## Notes
 
-## Verification Status
-
-Current DRIFT verification baseline:
-
-- command: `PYTHONPATH=src python3 -m unittest`
-- result: `39` tests passed
-- note: `2` Qt smoke checks are skipped when `PySide6` is not installed in the local environment
-
-## Repository Notes
-
-- The top-level `README.md`, `LICENSE`, and `.gitignore` are the authoritative repository metadata.
-- DRIFT under `src/drift/` is the default target for new development.
+- The repository root provides umbrella metadata such as `LICENSE` and `.gitignore`.
+- Individual tools should remain self-contained inside their domain folders.
 - Local virtual environments such as `.venv/` are ignored and are not part of the tracked source tree.
