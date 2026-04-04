@@ -1,4 +1,4 @@
-"""Right-panel recovery schematic and timeline placeholders for DRIFT."""
+"""Right-panel recovery schematic and timeline rendering for DRIFT."""
 
 from __future__ import annotations
 
@@ -6,13 +6,16 @@ from typing import Sequence
 
 from PySide6 import QtWidgets
 
+from drift.formatting import format_length, format_time
 from drift.models import Configuration
 from drift.services.validation import ValidationIssue
-from drift.ui.display_units import format_length, format_time
+from drift.services.visualization import build_recovery_visual_model
+
+from .schematic_widget import RecoverySchematicWidget
 
 
 class VisualsPanel(QtWidgets.QWidget):
-    """Textual placeholder visuals wired to the analyzed model state."""
+    """Recovery schematic and timeline widgets wired to analyzed model state."""
 
     def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
         super().__init__(parent)
@@ -23,16 +26,18 @@ class VisualsPanel(QtWidgets.QWidget):
 
         schematic_box = QtWidgets.QGroupBox("Recovery Schematic")
         schematic_layout = QtWidgets.QVBoxLayout(schematic_box)
-        self.schematic_text = QtWidgets.QPlainTextEdit()
-        self.schematic_text.setReadOnly(True)
-        schematic_layout.addWidget(self.schematic_text)
+        self.schematic_widget = RecoverySchematicWidget()
+        schematic_layout.addWidget(self.schematic_widget)
         layout.addWidget(schematic_box)
 
         timeline_box = QtWidgets.QGroupBox("Event Timeline")
         timeline_layout = QtWidgets.QVBoxLayout(timeline_box)
-        self.timeline_text = QtWidgets.QPlainTextEdit()
-        self.timeline_text.setReadOnly(True)
-        timeline_layout.addWidget(self.timeline_text)
+        self.timeline_table = QtWidgets.QTableWidget(0, 4)
+        self.timeline_table.setHorizontalHeaderLabels(["Time", "Event", "Altitude", "Notes"])
+        self.timeline_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.timeline_table.verticalHeader().setVisible(False)
+        self.timeline_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        timeline_layout.addWidget(self.timeline_table)
         layout.addWidget(timeline_box)
         layout.addStretch(1)
 
@@ -47,75 +52,62 @@ class VisualsPanel(QtWidgets.QWidget):
     ) -> None:
         issues = list(validation_issues or [])
         if configuration is None:
-            self.schematic_text.setPlainText(
-                "Recovery schematic placeholder.\n\nSelect or create a configuration to begin."
-            )
-            self.timeline_text.setPlainText(
-                "Timeline placeholder.\n\nAnalyze a configuration to populate this area."
-            )
+            self.schematic_widget.show_message("Select or create a configuration to begin.")
+            self._set_timeline_message("Analyze a configuration to populate this area.")
             return
 
         unit_system = configuration.display_unit_system
         if issues:
-            self.schematic_text.setPlainText(
-                "Recovery schematic placeholder.\n\n"
+            self.schematic_widget.show_message(
                 "Analysis is blocked by validation issues. Fix the input state before generating visuals."
             )
-            self.timeline_text.setPlainText(
-                "Timeline placeholder.\n\n"
-                f"Validation issue count: {len(issues)}"
-            )
+            self._set_timeline_message(f"Validation issue count: {len(issues)}")
             return
 
         if dirty:
-            self.schematic_text.setPlainText(
-                "Recovery schematic placeholder.\n\nDraft edits are pending. Re-run analysis to refresh this view."
+            self.schematic_widget.show_message(
+                "Draft edits are pending. Re-run analysis to refresh this view."
             )
-            self.timeline_text.setPlainText(
-                "Timeline placeholder.\n\nDraft edits are pending."
-            )
+            self._set_timeline_message("Draft edits are pending.")
             return
 
         if configuration.analysis_results is None:
-            self.schematic_text.setPlainText(
-                "Recovery schematic placeholder.\n\nThis configuration is saved as a draft."
-            )
-            self.timeline_text.setPlainText(
-                "Timeline placeholder.\n\nRun analysis to populate the event sequence."
-            )
+            self.schematic_widget.show_message("This configuration is saved as a draft.")
+            self._set_timeline_message("Run analysis to populate the event sequence.")
             return
 
-        schematic_lines = [
-            "Recovery schematic placeholder",
-            "",
-            f"Basis: {configuration.analysis_results.recovery_basis_label}",
-            f"Mode: {configuration.recovery_mode}",
-            "",
-            "Phase sequence:",
-        ]
-        for phase in configuration.analysis_results.phase_summaries:
-            schematic_lines.append(
-                f"- {phase.phase_name}: {format_length(phase.start_altitude_m, unit_system)}"
-                f" -> {format_length(phase.end_altitude_m, unit_system)}"
-                f" under {phase.parachute_id}"
+        visual_model = build_recovery_visual_model(configuration)
+        self.schematic_widget.set_visual_model(visual_model, unit_system=unit_system)
+        self.timeline_table.setRowCount(len(visual_model.timeline_events) + 1)
+        for row, event in enumerate(visual_model.timeline_events):
+            self._set_item(
+                row,
+                0,
+                "N/A" if event.time_s is None else f"T+{event.time_s:.2f} s",
             )
-        self.schematic_text.setPlainText("\n".join(schematic_lines))
+            self._set_item(row, 1, event.label)
+            self._set_item(row, 2, format_length(event.altitude_m, unit_system))
+            self._set_item(row, 3, event.notes or "")
 
-        timeline_lines = [
-            "Timeline placeholder",
-            "",
-        ]
-        elapsed_s = 0.0
-        for phase in configuration.analysis_results.phase_summaries:
-            timeline_lines.append(
-                f"T+{elapsed_s:.2f} s: start {phase.phase_name}"
-                f" at {format_length(phase.start_altitude_m, unit_system)}"
-            )
-            elapsed_s += phase.estimated_duration_s or 0.0
-            timeline_lines.append(
-                f"T+{elapsed_s:.2f} s: end {phase.phase_name}"
-                f" at {format_length(phase.end_altitude_m, unit_system)}"
-            )
-        timeline_lines.append("")
-        timeline_lines.append(f"Total descent time: {format_time(configuration.analysis_results.total_descent_time_s)}")
-        self.timeline_text.setPlainText("\n".join(timeline_lines))
+        total_row = len(visual_model.timeline_events)
+        self._set_item(total_row, 0, "")
+        self._set_item(total_row, 1, "Total descent time")
+        self._set_item(total_row, 2, "")
+        self._set_item(
+            total_row,
+            3,
+            format_time(configuration.analysis_results.total_descent_time_s),
+        )
+
+    def _set_timeline_message(self, message: str) -> None:
+        self.timeline_table.setRowCount(1)
+        self._set_item(0, 0, "")
+        self._set_item(0, 1, message)
+        self._set_item(0, 2, "")
+        self._set_item(0, 3, "")
+
+    def _set_item(self, row: int, column: int, text: str) -> None:
+        self.timeline_table.setItem(row, column, QtWidgets.QTableWidgetItem(text))
+
+
+__all__ = ["VisualsPanel"]

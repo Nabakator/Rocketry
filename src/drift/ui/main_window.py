@@ -17,6 +17,7 @@ from drift.models import (
     WindSettings,
 )
 from drift.services import AnalysisError, analyze_configuration, validate_configuration
+from drift.services.export import save_configuration_markdown
 from drift.services.persistence import load_catalogue, load_project, save_project
 from drift.ui.panels import InputPanel, ResultsPanel
 from drift.ui.visuals import VisualsPanel
@@ -184,6 +185,40 @@ class MainWindow(QtWidgets.QMainWindow):
             3000,
         )
 
+    def export_markdown_file(self) -> None:
+        """Export the current configuration as a Markdown engineering summary."""
+
+        project = self._project
+        current = self.current_configuration()
+        if project is None or current is None:
+            return
+
+        configuration = self.input_panel.build_configuration(current) if self._dirty else current
+        project_name = self.input_panel.project_name() if self._dirty else project.project_name
+        default_name = (
+            f"{project_name.strip().replace(' ', '-').lower()}-"
+            f"{configuration.configuration_name.strip().replace(' ', '-').lower()}.md"
+        )
+        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self,
+            "Export DRIFT Markdown Summary",
+            str(Path.cwd() / default_name),
+            "Markdown (*.md)",
+        )
+        if not file_path:
+            return
+
+        saved_path = save_configuration_markdown(
+            project_name=project_name,
+            configuration=configuration,
+            catalogue_items=self._catalogue_items,
+            path=file_path,
+        )
+        self.statusBar().showMessage(
+            f"Exported Markdown summary to {saved_path.name}.",
+            3000,
+        )
+
     def analyze_current_configuration(self) -> None:
         """Validate and analyze the active configuration through the service layer."""
 
@@ -241,6 +276,7 @@ class MainWindow(QtWidgets.QMainWindow):
         new_action = file_menu.addAction("New Project")
         open_action = file_menu.addAction("Open Project...")
         save_action = file_menu.addAction("Save Project")
+        export_action = file_menu.addAction("Export Markdown...")
         file_menu.addSeparator()
         close_action = file_menu.addAction("Close Window")
 
@@ -250,6 +286,7 @@ class MainWindow(QtWidgets.QMainWindow):
         new_action.triggered.connect(self.new_project)
         open_action.triggered.connect(self.open_project)
         save_action.triggered.connect(self.save_project_file)
+        export_action.triggered.connect(self.export_markdown_file)
         close_action.triggered.connect(self.close)
         analyze_action.triggered.connect(self.analyze_current_configuration)
 

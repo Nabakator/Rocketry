@@ -6,9 +6,10 @@ from typing import Sequence
 
 from PySide6 import QtCore, QtWidgets
 
+from drift.formatting import format_length, format_time, format_velocity
 from drift.models import CatalogueItem, Configuration, Project
+from drift.services.comparison import build_comparison_rows
 from drift.services.validation import ValidationIssue
-from drift.ui.display_units import format_length, format_time, format_velocity
 
 
 class ResultsPanel(QtWidgets.QWidget):
@@ -91,7 +92,7 @@ class ResultsPanel(QtWidgets.QWidget):
         )
         self.comparison_note.setWordWrap(True)
         comparison_layout.addWidget(self.comparison_note)
-        self.comparison_table = QtWidgets.QTableWidget(6, 3)
+        self.comparison_table = QtWidgets.QTableWidget(0, 3)
         self.comparison_table.setHorizontalHeaderLabels(["Metric", "A", "B"])
         self.comparison_table.verticalHeader().setVisible(False)
         self.comparison_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
@@ -309,39 +310,17 @@ class ResultsPanel(QtWidgets.QWidget):
             return
 
         self.comparison_note.setVisible(False)
-        rows = [
-            ("Recovery mode", config_a.recovery_mode, config_b.recovery_mode),
-            (
-                "Selected diameters",
-                self._format_selected_diameters(config_a),
-                self._format_selected_diameters(config_b),
-            ),
-            (
-                "Resulting velocities",
-                self._format_selected_velocities(config_a),
-                self._format_selected_velocities(config_b),
-            ),
-            (
-                "Total descent time",
-                self._format_total_time(config_a),
-                self._format_total_time(config_b),
-            ),
-            (
-                "Total drift",
-                self._format_total_drift(config_a),
-                self._format_total_drift(config_b),
-            ),
-            (
-                "Warnings",
-                ", ".join(warning.code for warning in config_a.warnings) or "None",
-                ", ".join(warning.code for warning in config_b.warnings) or "None",
-            ),
-        ]
+        rows = build_comparison_rows(
+            config_a,
+            config_b,
+            tuple(self._catalogue_by_id.values()),
+            unit_system=self._unit_system,
+        )
         self.comparison_table.setRowCount(len(rows))
-        for row, (metric, value_a, value_b) in enumerate(rows):
-            self._set_table_item(self.comparison_table, row, 0, metric)
-            self._set_table_item(self.comparison_table, row, 1, value_a)
-            self._set_table_item(self.comparison_table, row, 2, value_b)
+        for row, comparison_row in enumerate(rows):
+            self._set_table_item(self.comparison_table, row, 0, comparison_row.metric)
+            self._set_table_item(self.comparison_table, row, 1, comparison_row.value_a)
+            self._set_table_item(self.comparison_table, row, 2, comparison_row.value_b)
 
     def _find_configuration(self, configuration_id: str | None) -> Configuration | None:
         if self._project is None or configuration_id is None:
@@ -350,30 +329,6 @@ class ResultsPanel(QtWidgets.QWidget):
             if configuration.configuration_id == configuration_id:
                 return configuration
         return None
-
-    def _format_selected_diameters(self, configuration: Configuration) -> str:
-        values = [
-            f"{parachute.role}: {format_length(parachute.selected_nominal_diameter_m, self._unit_system)}"
-            for parachute in configuration.parachutes
-        ]
-        return "; ".join(values) if values else "N/A"
-
-    def _format_selected_velocities(self, configuration: Configuration) -> str:
-        values = [
-            f"{parachute.role}: {format_velocity(parachute.resulting_descent_velocity_mps, self._unit_system)}"
-            for parachute in configuration.parachutes
-        ]
-        return "; ".join(values) if values else "N/A"
-
-    def _format_total_time(self, configuration: Configuration) -> str:
-        if configuration.analysis_results is None:
-            return "Draft / not analyzed"
-        return format_time(configuration.analysis_results.total_descent_time_s)
-
-    def _format_total_drift(self, configuration: Configuration) -> str:
-        if configuration.analysis_results is None:
-            return "Draft / not analyzed"
-        return format_length(configuration.analysis_results.total_estimated_drift_m, self._unit_system)
 
     def _set_table_item(
         self,
