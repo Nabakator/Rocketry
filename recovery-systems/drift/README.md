@@ -46,12 +46,23 @@ They intentionally prioritise readable phase ordering and recovery sequence over
 
 From the repository root:
 
+Requirements:
+
+- Python `3.11` or newer
+- a local virtual environment is recommended
+- `PySide6` is installed through the DRIFT package dependencies
+
 ```bash
 cd recovery-systems/drift
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
 python3 -m pip install -e .
+```
+
+There is not yet a dedicated console entry point, so launch the desktop shell with:
+
+```bash
 PYTHONPATH=src python3 -c "from drift.ui.main_window import main; raise SystemExit(main())"
 ```
 
@@ -121,6 +132,8 @@ The catalogue is used for nominal-size matching after sizing calculations. It is
 
 The `docs/` folder holds project notes that define the current MVP contract:
 
+- `docs/design-spec.md`
+  - desktop UI design direction and component-level presentation guidance
 - `docs/mvp-spec.md`
   - high-level MVP scope and implementation direction
 - `docs/json-schema.md`
@@ -137,5 +150,7 @@ The `docs/` folder holds project notes that define the current MVP contract:
 DRIFT is the active recovery-systems tool in Rocketry and is currently at MVP / early-stage status.
 
 The architecture, validation, engineering core, warnings, persistence, comparison, visuals, and Markdown export are implemented. Future work should build on this structure rather than reintroducing tool logic at the repository root.
+
+The current desktop UI includes the shared theme system, custom top bar and state badge, redesigned left/centre/right panels, and a trajectory-style recovery schematic.
 
 The current recovery schematic is a non-scale engineering sketch that shows ascent separately from recovery descent, includes visible horizontal drift, and distinguishes drogue and main descent segments where applicable.
