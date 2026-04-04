@@ -48,6 +48,7 @@ From the repository root:
 cd recovery-systems/drift
 python3 -m venv .venv
 source .venv/bin/activate
+python3 -m pip install --upgrade pip
 python3 -m pip install -e .
 PYTHONPATH=src python3 -c "from drift.ui.main_window import main; raise SystemExit(main())"
 ```
