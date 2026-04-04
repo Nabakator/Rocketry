@@ -74,3 +74,26 @@ class MainWindowSmokeTests(unittest.TestCase):
         self.app.processEvents()
         self.assertEqual(window.top_bar.state_badge.state_text(), "DRAFT")
         self.assertTrue(window.top_bar.reset_button.isEnabled())
+
+    def test_left_panel_shows_configuration_tabs_and_deployment_helper(self) -> None:
+        window = MainWindow()
+        self.addCleanup(window.close)
+
+        self.assertEqual(len(window.input_panel.configuration_tab_buttons), 1)
+        self.assertEqual(
+            window.input_panel.deployment_helper_label.text(),
+            "Single parachute deploys at apogee. No staging.",
+        )
+        self.assertEqual(window.input_panel.altitude_stack.currentIndex(), 0)
+
+        window.create_configuration()
+        self.app.processEvents()
+        self.assertEqual(len(window.input_panel.configuration_tab_buttons), 2)
+
+        window.input_panel.dual_mode_button.click()
+        self.app.processEvents()
+        self.assertEqual(
+            window.input_panel.deployment_helper_label.text(),
+            "Drogue deploys at apogee, main deploys at a set altitude.",
+        )
+        self.assertEqual(window.input_panel.altitude_stack.currentIndex(), 1)

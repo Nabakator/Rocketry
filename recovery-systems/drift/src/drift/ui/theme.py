@@ -293,6 +293,81 @@ QFrame#topBarDivider {{
     max-width: 1px;
 }}
 
+QWidget#leftPanelFooter {{
+    background-color: {Colours.SURFACE_1};
+    border-top: 1px solid {Colours.PANEL_BORDER};
+}}
+
+QWidget#segmentedControl {{
+    background-color: {Colours.SURFACE_2};
+    border: 1px solid {Colours.BORDER};
+    border-radius: 4px;
+}}
+
+QPushButton#configTabButton,
+QPushButton#modeToggleButton,
+QPushButton#configAddButton {{
+    background-color: {Colours.SURFACE_2};
+    color: {Colours.MUTED_FOREGROUND};
+    border: 1px solid {Colours.PANEL_BORDER};
+    border-radius: 3px;
+    min-height: 28px;
+}}
+
+QPushButton#configTabButton {{
+    padding: 4px 10px;
+}}
+
+QPushButton#configAddButton {{
+    max-width: 32px;
+    min-width: 32px;
+    padding: 0;
+    font-family: "{mono_family}";
+    font-weight: 600;
+}}
+
+QPushButton#configTabButton:checked,
+QPushButton#modeToggleButton:checked {{
+    background-color: {rgba(Colours.PRIMARY, 0.16)};
+    color: {Colours.PRIMARY};
+    border: 1px solid {rgba(Colours.PRIMARY, 0.38)};
+}}
+
+QPushButton#configTabButton:hover,
+QPushButton#modeToggleButton:hover,
+QPushButton#configAddButton:hover {{
+    background-color: {Colours.SURFACE_3};
+}}
+
+QPushButton#modeToggleButton {{
+    min-width: 96px;
+    padding: 6px 12px;
+}}
+
+QLabel#deploymentHelper,
+QLabel#windHelper,
+QLabel#atmosphereHelper,
+QLabel#panelStateLabel {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-size: 10px;
+}}
+
+QLabel#panelStateLabel[state="draft"] {{
+    color: {Colours.WARNING};
+}}
+
+QLabel#panelStateLabel[state="valid"] {{
+    color: {Colours.PRIMARY};
+}}
+
+QLabel#panelStateLabel[state="analysed"] {{
+    color: {Colours.SUCCESS};
+}}
+
+QLabel#panelStateLabel[state="invalid"] {{
+    color: {Colours.DESTRUCTIVE};
+}}
+
 QLabel[role="helper"],
 QLabel[role="status"],
 QLabel[role="muted"] {{

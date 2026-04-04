@@ -461,12 +461,17 @@ class MainWindow(QtWidgets.QMainWindow):
             else (self._project.project_name if self._project is not None else "Untitled Project")
         )
         file_name = self._project_path.name if self._project_path is not None else None
+        state_presentation = self._state_badge_presentation(display_configuration, validation_issues)
         self.top_bar.set_project_context(project_name, file_name=file_name)
-        self.top_bar.set_state(self._state_badge_presentation(display_configuration, validation_issues))
+        self.top_bar.set_state(state_presentation)
         self.top_bar.set_action_state(
             has_project=self._project is not None,
             has_configuration=display_configuration is not None,
             can_reset=self._dirty,
+        )
+        self.input_panel.set_state_hint(
+            state_presentation.key,
+            self._panel_state_message(state_presentation.key),
         )
 
     def _state_badge_presentation(
@@ -481,6 +486,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if configuration is not None and configuration.analysis_results is not None:
             return StateBadgePresentation("analysed", "Analysed", Colours.STATE_ANALYSED)
         return StateBadgePresentation("valid", "Valid", Colours.STATE_VALID)
+
+    @staticmethod
+    def _panel_state_message(state_key: str) -> str:
+        messages = {
+            "draft": "Draft edits are pending. Analyse to refresh the current configuration.",
+            "valid": "Inputs are valid. Analyse to generate engineering results.",
+            "analysed": "Current configuration is analysed and up to date.",
+            "invalid": "Current inputs are invalid. Fix the validation issues before analysis.",
+        }
+        return messages.get(state_key, "Inputs are valid. Analyse to generate engineering results.")
 
     def _make_default_configuration(
         self,
