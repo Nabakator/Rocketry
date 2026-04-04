@@ -1,8 +1,0 @@
-# Parachute Designer — QtPy GUI
-# Default Qt backend: PySide6 (LGPL). If you prefer PyQt5, comment PySide6 and uncomment PyQt5 below.
-
-numpy==2.3.4
-qtpy>=2.4
-numpy>=1.24
-PySide6>=6.5
-# PyQt5>=5.15
