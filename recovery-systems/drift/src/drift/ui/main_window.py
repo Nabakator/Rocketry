@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from drift import APP_FULL_NAME
+from drift import APP_FULL_NAME, APP_WINDOW_NAME
 from drift.models import (
     AltitudeInputs,
     AtmosphereSettings,
@@ -348,13 +348,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _update_window_title(self) -> None:
         if self._project is None:
-            self.setWindowTitle(APP_FULL_NAME)
+            self.setWindowTitle(APP_WINDOW_NAME)
             return
 
         title_parts = [self._project.project_name or "Untitled Project"]
         if self._project_path is not None:
             title_parts.append(self._project_path.name)
-        title_parts.append(APP_FULL_NAME)
+        title_parts.append(APP_WINDOW_NAME)
         title = " - ".join(title_parts)
         if self._dirty:
             title = f"{title} *"

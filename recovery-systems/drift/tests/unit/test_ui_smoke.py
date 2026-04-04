@@ -11,6 +11,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 try:
     from PySide6 import QtWidgets
+    from drift import APP_WINDOW_NAME
     from drift.services.persistence import load_project
     from drift.ui import MainWindow
 
@@ -32,6 +33,7 @@ class MainWindowSmokeTests(unittest.TestCase):
         self.assertEqual(window.main_splitter.count(), 3)
         self.assertIsNotNone(window.current_project())
         self.assertIsNotNone(window.current_configuration())
+        self.assertEqual(window.windowTitle(), f"Untitled Project - {APP_WINDOW_NAME}")
 
     def test_main_window_can_analyze_and_save_project(self) -> None:
         window = MainWindow()
