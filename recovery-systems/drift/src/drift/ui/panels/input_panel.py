@@ -603,7 +603,7 @@ class InputPanel(QtWidgets.QWidget):
         )
 
     def project_name(self) -> str:
-        return self.project_name_edit.text().strip() or "Untitled Project"
+        return self.project_name_edit.text().strip() or "Untitled project"
 
     def set_state_hint(self, state_key: str, message: str) -> None:
         """Update the footer state hint using existing shell state."""

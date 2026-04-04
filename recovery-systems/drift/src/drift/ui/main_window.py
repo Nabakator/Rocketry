@@ -97,7 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
         configuration = self._make_default_configuration("cfg_001", "Configuration 1")
         self._project = Project(
             project_id="proj_001",
-            project_name="Untitled Project",
+            project_name="Untitled project",
             description=None,
             created_at=timestamp,
             updated_at=timestamp,
@@ -374,7 +374,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle(APP_WINDOW_NAME)
             return
 
-        title_parts = [self._project.project_name or "Untitled Project"]
+        title_parts = [self._project.project_name or "Untitled project"]
         if self._project_path is not None:
             title_parts.append(self._project_path.name)
         title_parts.append(APP_WINDOW_NAME)
@@ -476,7 +476,7 @@ class MainWindow(QtWidgets.QMainWindow):
         project_name = (
             self.input_panel.project_name()
             if self._dirty
-            else (self._project.project_name if self._project is not None else "Untitled Project")
+            else (self._project.project_name if self._project is not None else "Untitled project")
         )
         file_name = self._project_path.name if self._project_path is not None else None
         state_presentation = self._state_badge_presentation(state_configuration, validation_issues)
