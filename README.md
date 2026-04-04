@@ -1,6 +1,6 @@
-# GU Rocketry
+# Rocketry
 
-GU Rocketry is the umbrella repository for rocketry software and analysis tools, organized by engineering domain first and then by tool.
+Rocketry is the umbrella repository for rocketry software and analysis tools, organized by engineering domain first and then by tool.
 
 ## Overview
 
@@ -78,6 +78,6 @@ If future domains are added, they should follow the same pattern:
 
 ## Status
 
-GU Rocketry is currently structured as a multi-domain umbrella repository with DRIFT as the active implemented tool under `recovery-systems/`.
+Rocketry is currently structured as a multi-domain umbrella repository with DRIFT as the active implemented tool under `recovery-systems/`.
 
 The active recovery tool already includes the desktop shell, validated engineering core, comparison workflow, recovery visuals, and Markdown export. Future tools should follow the same domain-first, self-contained layout.

@@ -2,7 +2,7 @@
 
 `DRIFT` stands for `Deployment and Recovery Integrated Flight Tool`.
 
-This folder is the self-contained home of the active recovery-systems application inside the GU Rocketry umbrella repository.
+This folder is the self-contained home of the active recovery-systems application inside the Rocketry umbrella repository.
 
 ## Overview
 
@@ -10,7 +10,7 @@ DRIFT is a desktop application for amateur rocketry recovery-system design and f
 
 It exists because recovery work is usually treated as a sub-feature of a broader simulator, while recovery design often needs a faster and more focused workflow. DRIFT is intended to cover recovery-specific sizing, checks, comparison, and reporting without trying to replace a full flight simulator.
 
-Within GU Rocketry, the repository is organized by engineering domain first. DRIFT is the active tool inside the `recovery-systems` domain and is intended to remain self-contained so future recovery tools can live alongside it cleanly.
+Within Rocketry, the repository is organized by engineering domain first. DRIFT is the active tool inside the `recovery-systems` domain and is intended to remain self-contained so future recovery tools can live alongside it cleanly.
 
 ## Current MVP capabilities
 
@@ -130,11 +130,11 @@ The `docs/` folder holds project notes that define the current MVP contract:
 
 - DRIFT is the active implementation for the `recovery-systems` domain.
 - It is intended to remain self-contained so future sibling tools can live alongside it under the same domain.
-- The GU Rocketry repository is an umbrella repo and may contain other domains such as propulsion in the future.
+- The Rocketry repository is an umbrella repo and may contain other domains such as propulsion in the future.
 
 ## Status
 
-DRIFT is the active recovery-systems tool in GU Rocketry and is currently at MVP / early-stage status.
+DRIFT is the active recovery-systems tool in Rocketry and is currently at MVP / early-stage status.
 
 The architecture, validation, engineering core, warnings, persistence, comparison, visuals, and Markdown export are implemented. Future work should build on this structure rather than reintroducing tool logic at the repository root.
 
