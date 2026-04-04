@@ -16,6 +16,7 @@ Within GU Rocketry, the repository is organized by engineering domain first. DRI
 
 The current implementation supports:
 
+- a PySide6 desktop shell for project, configuration, analysis, comparison, and export workflows
 - project save and load using versioned JSON project files
 - single and dual deployment workflows
 - parachute sizing with safety margin and local catalogue matching
@@ -25,7 +26,7 @@ The current implementation supports:
 - deterministic validation before analysis
 - deterministic engineering warnings based on analysed results
 - side-by-side comparison of two saved configurations within a project
-- recovery schematic and event timeline views driven by analysed model state
+- trajectory-style recovery schematic and event timeline views driven by analysed model state
 - Markdown export of configuration assumptions and analysis results
 
 ## Non-goals and current limits
@@ -39,6 +40,7 @@ DRIFT currently does not try to be:
 - a PDF reporting tool
 
 The current visuals are engineering schematics, not high-fidelity trajectory plots.
+They intentionally prioritise readable phase ordering and recovery sequence over physical scale.
 
 ## Quickstart
 
@@ -54,6 +56,8 @@ PYTHONPATH=src python3 -c "from drift.ui.main_window import main; raise SystemEx
 ```
 
 This installs DRIFT in editable mode and launches the desktop shell.
+
+The desktop title bar uses the current project, file name where available, and the installed DRIFT version tag.
 
 To run the full test suite:
 
@@ -85,7 +89,7 @@ Core files and folders:
   - `core/`: SI-only engineering calculations
   - `models/`: persistence-facing domain models
   - `services/`: validation, analysis, comparison, export, and visualisation orchestration
-  - `ui/`: PySide6 desktop shell and panels
+  - `ui/`: PySide6 desktop shell, panels, and schematic widgets
 - `data/`
   - local curated parachute catalogue used by DRIFT
 - `tests/`
@@ -101,6 +105,7 @@ For contributors:
 - keep orchestration and model-to-model workflows in `src/drift/services/`
 - keep persistence-facing structures in `src/drift/models/`
 - keep PySide6 widget and presentation code in `src/drift/ui/`
+- keep recovery-schematic geometry rules in the visualisation layer, not in the analysis engine
 - do not move engineering formulas into widgets
 - changes are not considered complete until the test suite passes
 
@@ -132,3 +137,5 @@ The `docs/` folder holds project notes that define the current MVP contract:
 DRIFT is the active recovery-systems tool in GU Rocketry and is currently at MVP / early-stage status.
 
 The architecture, validation, engineering core, warnings, persistence, comparison, visuals, and Markdown export are implemented. Future work should build on this structure rather than reintroducing tool logic at the repository root.
+
+The current recovery schematic is a non-scale engineering sketch that shows ascent separately from recovery descent, includes visible horizontal drift, and distinguishes drogue and main descent segments where applicable.
