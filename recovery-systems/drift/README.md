@@ -58,15 +58,16 @@ python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
 python3 -m pip install -e .
-```
-
-There is not yet a dedicated console entry point, so launch the desktop shell with:
-
-```bash
-PYTHONPATH=src python3 -c "from drift.ui.main_window import main; raise SystemExit(main())"
+drift
 ```
 
 This installs DRIFT in editable mode and launches the desktop shell.
+
+You can also launch it with the module entry point:
+
+```bash
+python3 -m drift
+```
 
 The desktop title bar uses the current project, file name where available, and the installed DRIFT version tag.
 
