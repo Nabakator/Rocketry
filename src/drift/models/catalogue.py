@@ -1,0 +1,1 @@
+"""Placeholder catalogue model definitions."""
