@@ -25,7 +25,7 @@ That keeps each tool self-contained and avoids mixing tool-specific `src/`, `tes
 
 - `recovery-systems/drift/`
   - `DRIFT` (`Deployment and Recovery Integrated Flight Tool`)
-  - desktop PySide6 application for recovery-system design, analysis, comparison, visuals, and Markdown export
+  - desktop PySide6 application for recovery-system design, analysis, comparison, trajectory-style recovery visuals, and Markdown export
 
 ## What lives here today
 
@@ -33,12 +33,16 @@ At the moment, the active implemented tool in this repository is DRIFT under `re
 
 DRIFT covers recovery-system work such as:
 
+- desktop project and configuration workflow
 - project save and load
 - single and dual deployment workflows
 - parachute sizing
-- drift and descent-time estimation
+- atmosphere handling and manual density override
+- wind, drift, and descent-time estimation
 - validation and deterministic warnings
-- comparison, visuals, and Markdown export
+- comparison between saved configurations
+- trajectory-style recovery schematic and event timeline views
+- Markdown export
 
 Tool-specific setup, testing, and usage instructions should live in the tool’s own README rather than being duplicated in detail at the repository root.
 
@@ -59,6 +63,8 @@ cd recovery-systems/drift
 
 From there, use the DRIFT-specific README for setup, running, and testing.
 
+The DRIFT tool README lives at `recovery-systems/drift/README.md`.
+
 If future domains are added, they should follow the same pattern:
 
 - `domain-name/tool-name/`
@@ -73,3 +79,5 @@ If future domains are added, they should follow the same pattern:
 ## Status
 
 GU Rocketry is currently structured as a multi-domain umbrella repository with DRIFT as the active implemented tool under `recovery-systems/`.
+
+The active recovery tool already includes the desktop shell, validated engineering core, comparison workflow, recovery visuals, and Markdown export. Future tools should follow the same domain-first, self-contained layout.
