@@ -249,11 +249,12 @@ class VisualsPanel(QtWidgets.QWidget):
             return
 
         if dirty:
-            self.schematic_widget.show_message(
-                "Draft edits are pending. Re-analyse to update the recovery view."
-            )
-            self._set_timeline_empty("Draft edits are pending.")
-            return
+            if configuration.analysis_results is None:
+                self.schematic_widget.show_message(
+                    "Draft edits are pending. Re-analyse to update the recovery view."
+                )
+                self._set_timeline_empty("Draft edits are pending.")
+                return
 
         if configuration.analysis_results is None:
             self.schematic_widget.show_message(

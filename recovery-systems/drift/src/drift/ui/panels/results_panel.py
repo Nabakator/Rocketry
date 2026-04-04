@@ -495,22 +495,26 @@ class ResultsPanel(QtWidgets.QWidget):
             return
 
         if dirty:
-            self.status_label.setText(
-                "Draft edits are pending. Analyse to update the results."
-            )
-            self.basis_label.setText("Basis: N/A")
-            self._clear_analysis_tables()
-            return
+            if configuration.analysis_results is None:
+                self.status_label.setText(
+                    "Draft edits are pending. Analyse to generate results."
+                )
+                self.basis_label.setText("Basis: N/A")
+                self._clear_analysis_tables()
+                return
 
-        if configuration.analysis_results is None:
+            self.status_label.setText(
+                "Draft edits are pending. Results below are from the last analysis."
+            )
+        elif configuration.analysis_results is None:
             self.status_label.setText(
                 "This configuration has not been analysed."
             )
             self.basis_label.setText("Basis: N/A")
             self._clear_analysis_tables()
             return
-
-        self.status_label.setText("Results reflect the current configuration state.")
+        else:
+            self.status_label.setText("Results reflect the current configuration state.")
         self.basis_label.setText(
             f"Basis: {_humanise_identifier(configuration.analysis_results.recovery_basis_label)}"
         )

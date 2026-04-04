@@ -336,7 +336,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _refresh_output_panels(self) -> None:
         project = self._project
-        display_configuration, state_validation_issues = self._display_snapshot()
+        state_configuration, display_configuration, state_validation_issues = self._display_snapshot()
         validation_issues = [] if self._dirty else state_validation_issues
 
         unit_system = (
@@ -356,7 +356,7 @@ class MainWindow(QtWidgets.QMainWindow):
             validation_issues=validation_issues,
             dirty=self._dirty,
         )
-        self._update_top_bar(display_configuration, state_validation_issues)
+        self._update_top_bar(state_configuration, state_validation_issues)
 
     def reset_current_draft(self) -> None:
         """Discard pending draft edits and reload the active configuration."""
@@ -453,18 +453,24 @@ class MainWindow(QtWidgets.QMainWindow):
             return []
         return validate_configuration(configuration).issues
 
-    def _display_snapshot(self) -> tuple[Configuration | None, list]:
+    def _display_snapshot(
+        self,
+    ) -> tuple[Configuration | None, Configuration | None, list]:
         current = self.current_configuration()
         if self._dirty and current is not None:
-            display_configuration = self.input_panel.build_configuration(current)
+            state_configuration = self.input_panel.build_configuration(current)
+            display_configuration = (
+                current if current.analysis_results is not None else state_configuration
+            )
         else:
+            state_configuration = current
             display_configuration = current
-        validation_issues = self._validation_issues_for_configuration(display_configuration)
-        return display_configuration, validation_issues
+        validation_issues = self._validation_issues_for_configuration(state_configuration)
+        return state_configuration, display_configuration, validation_issues
 
     def _update_top_bar(
         self,
-        display_configuration: Configuration | None,
+        state_configuration: Configuration | None,
         validation_issues: list,
     ) -> None:
         project_name = (
@@ -473,12 +479,12 @@ class MainWindow(QtWidgets.QMainWindow):
             else (self._project.project_name if self._project is not None else "Untitled Project")
         )
         file_name = self._project_path.name if self._project_path is not None else None
-        state_presentation = self._state_badge_presentation(display_configuration, validation_issues)
+        state_presentation = self._state_badge_presentation(state_configuration, validation_issues)
         self.top_bar.set_project_context(project_name, file_name=file_name)
         self.top_bar.set_state(state_presentation)
         self.top_bar.set_action_state(
             has_project=self._project is not None,
-            has_configuration=display_configuration is not None,
+            has_configuration=state_configuration is not None,
             can_reset=self._dirty,
         )
         self.input_panel.set_state_hint(
@@ -491,10 +497,10 @@ class MainWindow(QtWidgets.QMainWindow):
         configuration: Configuration | None,
         validation_issues: list,
     ) -> StateBadgePresentation:
-        if validation_issues:
-            return StateBadgePresentation("invalid", "Invalid", Colours.STATE_INVALID)
         if self._dirty:
             return StateBadgePresentation("draft", "Draft", Colours.STATE_DRAFT)
+        if validation_issues:
+            return StateBadgePresentation("invalid", "Invalid", Colours.STATE_INVALID)
         if configuration is not None and configuration.analysis_results is not None:
             return StateBadgePresentation("analysed", "Analysed", Colours.STATE_ANALYSED)
         return StateBadgePresentation("valid", "Valid", Colours.STATE_VALID)
@@ -502,7 +508,7 @@ class MainWindow(QtWidgets.QMainWindow):
     @staticmethod
     def _panel_state_message(state_key: str) -> str:
         messages = {
-            "draft": "Draft edits are pending. Analyse to update the results.",
+            "draft": "Draft edits are pending. Current results are from the last analysis.",
             "valid": "Inputs are valid. Analyse to generate results.",
             "analysed": "Results are current.",
             "invalid": "Inputs are invalid. Resolve the validation issues.",

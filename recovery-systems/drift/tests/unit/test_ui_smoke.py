@@ -85,6 +85,31 @@ class MainWindowSmokeTests(unittest.TestCase):
         self.assertEqual(window.top_bar.state_badge.state_text(), "DRAFT")
         self.assertTrue(window.top_bar.reset_button.isEnabled())
 
+    def test_results_and_visuals_remain_visible_while_draft_is_dirty(self) -> None:
+        window = MainWindow()
+        self.addCleanup(window.close)
+
+        window.analyze_current_configuration()
+        self.app.processEvents()
+
+        analysed_total_time = window.results_panel.metric_cards["total_time"].value.text()
+        analysed_phase_rows = window.results_panel.phase_table.rowCount()
+        analysed_timeline_rows = len(window.visuals_panel.timeline_event_widgets)
+
+        window.input_panel.mass_spin.setValue(window.input_panel.mass_spin.value() + 1.0)
+        self.app.processEvents()
+
+        self.assertEqual(window.top_bar.state_badge.state_text(), "DRAFT")
+        self.assertEqual(
+            window.results_panel.status_label.text(),
+            "Draft edits are pending. Results below are from the last analysis.",
+        )
+        self.assertEqual(window.results_panel.metric_cards["total_time"].value.text(), analysed_total_time)
+        self.assertEqual(window.results_panel.phase_table.rowCount(), analysed_phase_rows)
+        self.assertGreater(analysed_phase_rows, 0)
+        self.assertEqual(len(window.visuals_panel.timeline_event_widgets), analysed_timeline_rows)
+        self.assertGreater(analysed_timeline_rows, 0)
+
     def test_left_panel_shows_configuration_tabs_and_deployment_helper(self) -> None:
         window = MainWindow()
         self.addCleanup(window.close)
