@@ -97,3 +97,22 @@ class MainWindowSmokeTests(unittest.TestCase):
             "Drogue deploys at apogee, main deploys at a set altitude.",
         )
         self.assertEqual(window.input_panel.altitude_stack.currentIndex(), 1)
+
+    def test_centre_panel_shows_results_tabs_and_metric_cards(self) -> None:
+        window = MainWindow()
+        self.addCleanup(window.close)
+
+        self.assertEqual(window.results_panel.tab_widget.count(), 2)
+        self.assertEqual(window.results_panel.tab_widget.tabText(0), "Results")
+        self.assertEqual(window.results_panel.tab_widget.tabText(1), "Compare")
+        self.assertEqual(
+            window.results_panel.comparison_note.text(),
+            "Create a second configuration to compare.",
+        )
+
+        window.analyze_current_configuration()
+        self.app.processEvents()
+
+        self.assertIn("s", window.results_panel.metric_cards["total_time"].value.text())
+        self.assertIn("m", window.results_panel.metric_cards["total_drift"].value.text())
+        self.assertGreater(window.results_panel.phase_table.rowCount(), 0)

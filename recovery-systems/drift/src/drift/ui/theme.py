@@ -197,6 +197,10 @@ QWidget#centrePanel {{
     background-color: {Colours.SURFACE_0};
 }}
 
+QTabWidget#centreTabs {{
+    background-color: {Colours.SURFACE_0};
+}}
+
 QWidget#topBar {{
     background-color: {Colours.SURFACE_0};
     border-bottom: 1px solid {Colours.PANEL_BORDER};
@@ -378,6 +382,146 @@ QLabel[role="helper"] {{
     font-size: 10px;
 }}
 
+QLabel#statusBanner {{
+    background-color: {Colours.SURFACE_1};
+    border: 1px solid {Colours.PANEL_BORDER};
+    border-radius: 4px;
+    padding: {SPACING.md}px;
+    color: {Colours.FOREGROUND};
+}}
+
+QLabel#basisLabel {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-family: "{mono_family}";
+    font-size: 10px;
+}}
+
+QLabel#sectionHeader {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-size: 11px;
+    font-weight: 600;
+}}
+
+QFrame#resultsSection,
+QFrame#comparisonMatrix,
+QFrame#summaryCard,
+QFrame#resultCard {{
+    background-color: {Colours.SURFACE_1};
+    border: 1px solid {Colours.PANEL_BORDER};
+    border-radius: 4px;
+}}
+
+QFrame#resultCard[alert="true"] {{
+    border: 1px solid {rgba(Colours.WARNING, 0.38)};
+}}
+
+QFrame#resultCard[alert="true"] QLabel#metricCardValue {{
+    color: {Colours.WARNING};
+}}
+
+QLabel#metricCardLabel,
+QLabel#summaryFieldLabel,
+QLabel#comparisonFieldLabel {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-size: 10px;
+}}
+
+QLabel#metricCardValue {{
+    font-family: "{mono_family}";
+    font-size: 20px;
+    font-weight: 600;
+}}
+
+QLabel#metricCardSubLabel,
+QLabel#summaryCardSubLabel,
+QLabel#warningCardMeta,
+QLabel#emptyStateLabel {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-size: 10px;
+}}
+
+QLabel#summaryCardTitle,
+QLabel#warningCardTitle,
+QLabel#comparisonColumnTitle {{
+    color: {Colours.FOREGROUND};
+    font-size: 12px;
+    font-weight: 600;
+}}
+
+QLabel#summaryPhaseDot[phase="drogue"] {{
+    color: {Colours.PHASE_DROGUE};
+}}
+
+QLabel#summaryPhaseDot[phase="main"] {{
+    color: {Colours.PHASE_MAIN};
+}}
+
+QLabel#summaryPhaseDot[phase="freefall"] {{
+    color: {Colours.PHASE_FREEFALL};
+}}
+
+QLabel#summaryFieldValue,
+QLabel#comparisonValue {{
+    font-family: "{mono_family}";
+}}
+
+QLabel#comparisonValue {{
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 6px 8px;
+}}
+
+QLabel#comparisonValue[changed="true"] {{
+    background-color: {rgba(Colours.PRIMARY, 0.10)};
+    border: 1px solid {rgba(Colours.PRIMARY, 0.22)};
+}}
+
+QLabel#comparisonMetricLabel {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-size: 11px;
+    padding: 6px 0;
+}}
+
+QFrame#warningCard {{
+    border-radius: 4px;
+    padding: 0;
+}}
+
+QFrame#warningCard[severity="error"] {{
+    background-color: {rgba(Colours.DESTRUCTIVE, 0.08)};
+    border: 1px solid {rgba(Colours.DESTRUCTIVE, 0.30)};
+}}
+
+QFrame#warningCard[severity="warning"] {{
+    background-color: {rgba(Colours.WARNING, 0.08)};
+    border: 1px solid {rgba(Colours.WARNING, 0.30)};
+}}
+
+QFrame#warningCard[severity="info"] {{
+    background-color: {rgba(Colours.INFO, 0.08)};
+    border: 1px solid {rgba(Colours.INFO, 0.22)};
+}}
+
+QFrame#warningCard[severity="error"] QLabel#warningCardIcon,
+QFrame#warningCard[severity="error"] QLabel#warningCardTitle {{
+    color: {Colours.DESTRUCTIVE};
+}}
+
+QFrame#warningCard[severity="warning"] QLabel#warningCardIcon,
+QFrame#warningCard[severity="warning"] QLabel#warningCardTitle {{
+    color: {Colours.WARNING};
+}}
+
+QFrame#warningCard[severity="info"] QLabel#warningCardIcon,
+QFrame#warningCard[severity="info"] QLabel#warningCardTitle {{
+    color: {Colours.INFO};
+}}
+
+QLabel#warningCardMessage {{
+    color: {Colours.FOREGROUND};
+}}
+
 QLabel[role="metricValue"],
 QLabel[role="mono"] {{
     font-family: "{mono_family}";
@@ -498,6 +642,10 @@ QTableCornerButton::section {{
     border: 1px solid {Colours.PANEL_BORDER};
 }}
 
+QTableWidget#phaseTable {{
+    border-radius: 4px;
+}}
+
 QHeaderView::section {{
     background-color: {Colours.SURFACE_2};
     color: {Colours.MUTED_FOREGROUND};
@@ -511,12 +659,13 @@ QHeaderView::section {{
 
 QTabWidget::pane {{
     border-top: 1px solid {Colours.PANEL_BORDER};
+    top: -1px;
 }}
 
 QTabBar::tab {{
     background-color: transparent;
     color: {Colours.MUTED_FOREGROUND};
-    padding: 8px 12px;
+    padding: 10px 12px;
     border-bottom: 2px solid transparent;
 }}
 
