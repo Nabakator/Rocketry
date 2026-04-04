@@ -117,9 +117,9 @@ class TopBarWidget(QtWidgets.QWidget):
         self.project_button = QtWidgets.QToolButton()
         self.project_button.setObjectName("projectSelectorButton")
         self.project_button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
-        self.project_button.setText("Untitled Project")
+        self.project_button.setText("Untitled project")
         self.project_menu = QtWidgets.QMenu(self.project_button)
-        self.current_project_action = self.project_menu.addAction("Untitled Project")
+        self.current_project_action = self.project_menu.addAction("Untitled project")
         self.current_project_action.setEnabled(False)
         self.project_menu.addSeparator()
         self.new_project_action = self.project_menu.addAction("New project")
@@ -201,7 +201,7 @@ class TopBarWidget(QtWidgets.QWidget):
     def set_project_context(self, project_name: str, *, file_name: str | None = None) -> None:
         """Update the displayed project label and tooltip."""
 
-        project_name = project_name or "Untitled Project"
+        project_name = project_name or "Untitled project"
         self.project_button.setText(project_name)
         self.current_project_action.setText(project_name)
         tooltip = project_name if file_name is None else f"{project_name}\n{file_name}"
