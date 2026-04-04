@@ -1,4 +1,365 @@
 {
   "schema_version": "1.0.0",
-  "items": []
+  "items": [
+    {
+      "item_id": "flat_circular_0_9",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "0.9 m Flat Circular",
+      "family": "flat_circular",
+      "nominal_diameter_m": 0.9,
+      "nominal_diameter_display": "0.9 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "flat_circular_1_2",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.2 m Flat Circular",
+      "family": "flat_circular",
+      "nominal_diameter_m": 1.2,
+      "nominal_diameter_display": "1.2 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "flat_circular_1_6",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.6 m Flat Circular",
+      "family": "flat_circular",
+      "nominal_diameter_m": 1.6,
+      "nominal_diameter_display": "1.6 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "flat_circular_2_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.0 m Flat Circular",
+      "family": "flat_circular",
+      "nominal_diameter_m": 2.0,
+      "nominal_diameter_display": "2.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "flat_circular_2_4",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.4 m Flat Circular",
+      "family": "flat_circular",
+      "nominal_diameter_m": 2.4,
+      "nominal_diameter_display": "2.4 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "flat_circular_3_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "3.0 m Flat Circular",
+      "family": "flat_circular",
+      "nominal_diameter_m": 3.0,
+      "nominal_diameter_display": "3.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "hemispherical_0_9",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "0.9 m Hemispherical",
+      "family": "hemispherical",
+      "nominal_diameter_m": 0.9,
+      "nominal_diameter_display": "0.9 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "hemispherical_1_2",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.2 m Hemispherical",
+      "family": "hemispherical",
+      "nominal_diameter_m": 1.2,
+      "nominal_diameter_display": "1.2 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "hemispherical_1_6",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.6 m Hemispherical",
+      "family": "hemispherical",
+      "nominal_diameter_m": 1.6,
+      "nominal_diameter_display": "1.6 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "hemispherical_2_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.0 m Hemispherical",
+      "family": "hemispherical",
+      "nominal_diameter_m": 2.0,
+      "nominal_diameter_display": "2.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "hemispherical_2_4",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.4 m Hemispherical",
+      "family": "hemispherical",
+      "nominal_diameter_m": 2.4,
+      "nominal_diameter_display": "2.4 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "hemispherical_3_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "3.0 m Hemispherical",
+      "family": "hemispherical",
+      "nominal_diameter_m": 3.0,
+      "nominal_diameter_display": "3.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "toroidal_0_9",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "0.9 m Toroidal",
+      "family": "toroidal",
+      "nominal_diameter_m": 0.9,
+      "nominal_diameter_display": "0.9 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "toroidal_1_2",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.2 m Toroidal",
+      "family": "toroidal",
+      "nominal_diameter_m": 1.2,
+      "nominal_diameter_display": "1.2 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "toroidal_1_6",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.6 m Toroidal",
+      "family": "toroidal",
+      "nominal_diameter_m": 1.6,
+      "nominal_diameter_display": "1.6 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "toroidal_2_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.0 m Toroidal",
+      "family": "toroidal",
+      "nominal_diameter_m": 2.0,
+      "nominal_diameter_display": "2.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "toroidal_2_4",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.4 m Toroidal",
+      "family": "toroidal",
+      "nominal_diameter_m": 2.4,
+      "nominal_diameter_display": "2.4 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "toroidal_3_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "3.0 m Toroidal",
+      "family": "toroidal",
+      "nominal_diameter_m": 3.0,
+      "nominal_diameter_display": "3.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "cruciform_0_9",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "0.9 m Cruciform",
+      "family": "cruciform",
+      "nominal_diameter_m": 0.9,
+      "nominal_diameter_display": "0.9 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "cruciform_1_2",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.2 m Cruciform",
+      "family": "cruciform",
+      "nominal_diameter_m": 1.2,
+      "nominal_diameter_display": "1.2 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "cruciform_1_6",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.6 m Cruciform",
+      "family": "cruciform",
+      "nominal_diameter_m": 1.6,
+      "nominal_diameter_display": "1.6 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "cruciform_2_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.0 m Cruciform",
+      "family": "cruciform",
+      "nominal_diameter_m": 2.0,
+      "nominal_diameter_display": "2.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "cruciform_2_4",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.4 m Cruciform",
+      "family": "cruciform",
+      "nominal_diameter_m": 2.4,
+      "nominal_diameter_display": "2.4 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "cruciform_3_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "3.0 m Cruciform",
+      "family": "cruciform",
+      "nominal_diameter_m": 3.0,
+      "nominal_diameter_display": "3.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "ribbon_0_9",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "0.9 m Ribbon",
+      "family": "ribbon",
+      "nominal_diameter_m": 0.9,
+      "nominal_diameter_display": "0.9 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "ribbon_1_2",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.2 m Ribbon",
+      "family": "ribbon",
+      "nominal_diameter_m": 1.2,
+      "nominal_diameter_display": "1.2 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "ribbon_1_6",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.6 m Ribbon",
+      "family": "ribbon",
+      "nominal_diameter_m": 1.6,
+      "nominal_diameter_display": "1.6 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "ribbon_2_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.0 m Ribbon",
+      "family": "ribbon",
+      "nominal_diameter_m": 2.0,
+      "nominal_diameter_display": "2.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "ribbon_2_4",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.4 m Ribbon",
+      "family": "ribbon",
+      "nominal_diameter_m": 2.4,
+      "nominal_diameter_display": "2.4 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "ribbon_3_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "3.0 m Ribbon",
+      "family": "ribbon",
+      "nominal_diameter_m": 3.0,
+      "nominal_diameter_display": "3.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "streamer_0_9",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "0.9 m Streamer",
+      "family": "streamer",
+      "nominal_diameter_m": 0.9,
+      "nominal_diameter_display": "0.9 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "streamer_1_2",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.2 m Streamer",
+      "family": "streamer",
+      "nominal_diameter_m": 1.2,
+      "nominal_diameter_display": "1.2 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "streamer_1_6",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "1.6 m Streamer",
+      "family": "streamer",
+      "nominal_diameter_m": 1.6,
+      "nominal_diameter_display": "1.6 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "streamer_2_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.0 m Streamer",
+      "family": "streamer",
+      "nominal_diameter_m": 2.0,
+      "nominal_diameter_display": "2.0 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "streamer_2_4",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "2.4 m Streamer",
+      "family": "streamer",
+      "nominal_diameter_m": 2.4,
+      "nominal_diameter_display": "2.4 m",
+      "notes": null,
+      "url": null
+    },
+    {
+      "item_id": "streamer_3_0",
+      "vendor": "DRIFT Reference Catalogue",
+      "product_name": "3.0 m Streamer",
+      "family": "streamer",
+      "nominal_diameter_m": 3.0,
+      "nominal_diameter_display": "3.0 m",
+      "notes": null,
+      "url": null
+    }
+  ]
 }
