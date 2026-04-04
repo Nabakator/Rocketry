@@ -28,6 +28,11 @@ class Colours:
     SUCCESS = "#47a05c"
     INFO = "#4a9be8"
 
+    STATE_DRAFT = "#5f6673"
+    STATE_VALID = PRIMARY
+    STATE_ANALYSED = SUCCESS
+    STATE_INVALID = DESTRUCTIVE
+
     PHASE_ASCENT = "#d45d5d"
     PHASE_FREEFALL = "#e8912a"
     PHASE_DROGUE = "#3a9fd4"
@@ -192,6 +197,11 @@ QWidget#centrePanel {{
     background-color: {Colours.SURFACE_0};
 }}
 
+QWidget#topBar {{
+    background-color: {Colours.SURFACE_0};
+    border-bottom: 1px solid {Colours.PANEL_BORDER};
+}}
+
 QWidget#leftPanel {{
     border-right: 1px solid {Colours.PANEL_BORDER};
 }}
@@ -229,6 +239,58 @@ QGroupBox::title {{
     color: {Colours.MUTED_FOREGROUND};
     font-size: 11px;
     font-weight: 600;
+}}
+
+QLabel#brandLabel {{
+    color: {Colours.PRIMARY};
+    font-family: "{mono_family}";
+    font-size: 13px;
+    font-weight: 600;
+}}
+
+QLabel#versionLabel {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-family: "{mono_family}";
+    font-size: 10px;
+}}
+
+QToolButton#projectSelectorButton {{
+    background-color: {Colours.SURFACE_1};
+    border: 1px solid {Colours.BORDER};
+    border-radius: 3px;
+    padding: 5px 10px;
+    min-height: 26px;
+    color: {Colours.FOREGROUND};
+}}
+
+QToolButton#projectSelectorButton::menu-indicator {{
+    subcontrol-origin: padding;
+    subcontrol-position: right center;
+}}
+
+QToolButton#topBarActionButton {{
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    min-width: 28px;
+    max-width: 28px;
+    min-height: 28px;
+    padding: 0;
+}}
+
+QToolButton#topBarActionButton:hover {{
+    background-color: {Colours.SURFACE_2};
+    border: 1px solid {Colours.BORDER};
+}}
+
+QToolButton#topBarActionButton:disabled {{
+    color: {rgba(Colours.FOREGROUND, 0.4)};
+}}
+
+QFrame#topBarDivider {{
+    background-color: {Colours.PANEL_BORDER};
+    min-width: 1px;
+    max-width: 1px;
 }}
 
 QLabel[role="helper"],
@@ -386,22 +448,6 @@ QTabBar::tab {{
 QTabBar::tab:selected {{
     color: {Colours.PRIMARY};
     border-bottom: 2px solid {Colours.PRIMARY};
-}}
-
-QMenuBar#topBar {{
-    background-color: {Colours.SURFACE_1};
-    color: {Colours.FOREGROUND};
-    border-bottom: 1px solid {Colours.PANEL_BORDER};
-    padding: 4px 8px;
-}}
-
-QMenuBar#topBar::item {{
-    background: transparent;
-    padding: 6px 10px;
-}}
-
-QMenuBar#topBar::item:selected {{
-    background-color: {Colours.SURFACE_2};
 }}
 
 QMenu {{

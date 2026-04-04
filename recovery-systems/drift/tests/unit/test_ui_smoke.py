@@ -30,23 +30,29 @@ class MainWindowSmokeTests(unittest.TestCase):
         window = MainWindow()
         self.addCleanup(window.close)
 
+        self.app.processEvents()
         self.assertEqual(window.main_splitter.count(), 3)
         self.assertIsNotNone(window.current_project())
         self.assertIsNotNone(window.current_configuration())
         self.assertEqual(window.windowTitle(), f"Untitled Project - {APP_WINDOW_NAME}")
+        self.assertEqual(window.top_bar.project_button.text(), "Untitled Project")
+        self.assertEqual(window.top_bar.state_badge.state_text(), "VALID")
         self.assertEqual(window.input_panel.objectName(), "leftPanel")
         self.assertEqual(window.results_panel.objectName(), "centrePanel")
         self.assertEqual(window.visuals_panel.objectName(), "rightPanel")
         self.assertIn("QWidget#leftPanel", self.app.styleSheet())
+        self.assertIn("QWidget#topBar", self.app.styleSheet())
 
     def test_main_window_can_analyze_and_save_project(self) -> None:
         window = MainWindow()
         self.addCleanup(window.close)
 
         window.analyze_current_configuration()
+        self.app.processEvents()
         current_configuration = window.current_configuration()
         self.assertIsNotNone(current_configuration)
         self.assertIsNotNone(current_configuration.analysis_results)
+        self.assertEqual(window.top_bar.state_badge.state_text(), "ANALYSED")
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             path = Path(tmp_dir) / "drift-project.json"
@@ -55,3 +61,16 @@ class MainWindowSmokeTests(unittest.TestCase):
 
         self.assertEqual(reloaded.schema_version, "1.0.0")
         self.assertIsNotNone(reloaded.configurations[0].analysis_results)
+
+    def test_top_bar_state_moves_to_draft_after_edit(self) -> None:
+        window = MainWindow()
+        self.addCleanup(window.close)
+
+        window.analyze_current_configuration()
+        self.app.processEvents()
+        self.assertEqual(window.top_bar.state_badge.state_text(), "ANALYSED")
+
+        window.input_panel.mass_spin.setValue(window.input_panel.mass_spin.value() + 1.0)
+        self.app.processEvents()
+        self.assertEqual(window.top_bar.state_badge.state_text(), "DRAFT")
+        self.assertTrue(window.top_bar.reset_button.isEnabled())

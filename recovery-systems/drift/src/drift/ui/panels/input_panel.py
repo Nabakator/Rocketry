@@ -73,7 +73,10 @@ class InputPanel(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         configure_box_layout(layout)
 
-        button_row = QtWidgets.QHBoxLayout()
+        self.project_actions_widget = QtWidgets.QWidget()
+        self.project_actions_widget.hide()
+        button_row = QtWidgets.QHBoxLayout(self.project_actions_widget)
+        button_row.setContentsMargins(0, 0, 0, 0)
         button_row.setSpacing(SPACING.sm)
         self.new_project_button = QtWidgets.QPushButton("New")
         self.open_project_button = QtWidgets.QPushButton("Open")
@@ -81,7 +84,7 @@ class InputPanel(QtWidgets.QWidget):
         button_row.addWidget(self.new_project_button)
         button_row.addWidget(self.open_project_button)
         button_row.addWidget(self.save_project_button)
-        layout.addLayout(button_row)
+        layout.addWidget(self.project_actions_widget)
 
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidgetResizable(True)

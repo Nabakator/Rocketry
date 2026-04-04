@@ -20,7 +20,8 @@ from drift.services import AnalysisError, analyze_configuration, validate_config
 from drift.services.export import save_configuration_markdown
 from drift.services.persistence import load_catalogue, load_project, save_project
 from drift.ui.panels import InputPanel, ResultsPanel
-from drift.ui.theme import apply_theme
+from drift.ui.theme import Colours, apply_theme, configure_box_layout
+from drift.ui.top_bar import StateBadgePresentation, TopBarWidget
 from drift.ui.visuals import VisualsPanel
 
 
@@ -261,6 +262,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statusBar().showMessage("Analysis completed.", 3000)
 
     def _build_ui(self) -> None:
+        self.top_bar = TopBarWidget(self)
         self.input_panel = InputPanel(self)
         self.input_panel.setObjectName("leftPanel")
         self.input_panel.setMinimumWidth(300)
@@ -282,36 +284,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.main_splitter.setStretchFactor(1, 1)
         self.main_splitter.setStretchFactor(2, 0)
         self.main_splitter.setSizes([320, 840, 280])
-        self.setCentralWidget(self.main_splitter)
 
-        menu_bar = self.menuBar()
-        menu_bar.setObjectName("topBar")
-        menu_bar.setNativeMenuBar(False)
-        file_menu = menu_bar.addMenu("&File")
-        new_action = file_menu.addAction("New Project")
-        open_action = file_menu.addAction("Open Project...")
-        save_action = file_menu.addAction("Save Project")
-        export_action = file_menu.addAction("Export Markdown...")
-        file_menu.addSeparator()
-        close_action = file_menu.addAction("Close Window")
-
-        run_menu = menu_bar.addMenu("&Run")
-        analyze_action = run_menu.addAction("Analyse")
-
-        new_action.triggered.connect(self.new_project)
-        open_action.triggered.connect(self.open_project)
-        save_action.triggered.connect(self.save_project_file)
-        export_action.triggered.connect(self.export_markdown_file)
-        close_action.triggered.connect(self.close)
-        analyze_action.triggered.connect(self.analyze_current_configuration)
+        shell = QtWidgets.QWidget(self)
+        shell_layout = QtWidgets.QVBoxLayout(shell)
+        configure_box_layout(shell_layout, margins=(0, 0, 0, 0), spacing=0)
+        shell_layout.addWidget(self.top_bar)
+        shell_layout.addWidget(self.main_splitter, 1)
+        self.setCentralWidget(shell)
 
         self.statusBar().setObjectName("statusBar")
         self.statusBar().showMessage("DRIFT desktop shell ready.")
 
     def _connect_signals(self) -> None:
-        self.input_panel.new_project_requested.connect(self.new_project)
-        self.input_panel.open_project_requested.connect(self.open_project)
-        self.input_panel.save_project_requested.connect(self.save_project_file)
+        self.top_bar.new_project_requested.connect(self.new_project)
+        self.top_bar.load_requested.connect(self.open_project)
+        self.top_bar.save_requested.connect(self.save_project_file)
+        self.top_bar.export_requested.connect(self.export_markdown_file)
+        self.top_bar.reset_requested.connect(self.reset_current_draft)
         self.input_panel.new_configuration_requested.connect(self.create_configuration)
         self.input_panel.configuration_selected.connect(self._on_configuration_selected)
         self.input_panel.analyze_requested.connect(self.analyze_current_configuration)
@@ -335,14 +324,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _refresh_output_panels(self) -> None:
         project = self._project
-        current = self.current_configuration()
-
-        if self._dirty and current is not None:
-            display_configuration = self.input_panel.build_configuration(current)
-            validation_issues = []
-        else:
-            display_configuration = current
-            validation_issues = self._validation_issues_for_configuration(current)
+        display_configuration, state_validation_issues = self._display_snapshot()
+        validation_issues = [] if self._dirty else state_validation_issues
 
         unit_system = (
             display_configuration.display_unit_system
@@ -361,6 +344,18 @@ class MainWindow(QtWidgets.QMainWindow):
             validation_issues=validation_issues,
             dirty=self._dirty,
         )
+        self._update_top_bar(display_configuration, state_validation_issues)
+
+    def reset_current_draft(self) -> None:
+        """Discard pending draft edits and reload the active configuration."""
+
+        if not self._dirty:
+            self.statusBar().showMessage("No draft edits to reset.", 3000)
+            return
+
+        self._dirty = False
+        self._reload_ui_from_model()
+        self.statusBar().showMessage("Draft edits discarded.", 3000)
 
     def _update_window_title(self) -> None:
         if self._project is None:
@@ -445,6 +440,47 @@ class MainWindow(QtWidgets.QMainWindow):
         if configuration is None:
             return []
         return validate_configuration(configuration).issues
+
+    def _display_snapshot(self) -> tuple[Configuration | None, list]:
+        current = self.current_configuration()
+        if self._dirty and current is not None:
+            display_configuration = self.input_panel.build_configuration(current)
+        else:
+            display_configuration = current
+        validation_issues = self._validation_issues_for_configuration(display_configuration)
+        return display_configuration, validation_issues
+
+    def _update_top_bar(
+        self,
+        display_configuration: Configuration | None,
+        validation_issues: list,
+    ) -> None:
+        project_name = (
+            self.input_panel.project_name()
+            if self._dirty
+            else (self._project.project_name if self._project is not None else "Untitled Project")
+        )
+        file_name = self._project_path.name if self._project_path is not None else None
+        self.top_bar.set_project_context(project_name, file_name=file_name)
+        self.top_bar.set_state(self._state_badge_presentation(display_configuration, validation_issues))
+        self.top_bar.set_action_state(
+            has_project=self._project is not None,
+            has_configuration=display_configuration is not None,
+            can_reset=self._dirty,
+        )
+
+    def _state_badge_presentation(
+        self,
+        configuration: Configuration | None,
+        validation_issues: list,
+    ) -> StateBadgePresentation:
+        if validation_issues:
+            return StateBadgePresentation("invalid", "Invalid", Colours.STATE_INVALID)
+        if self._dirty:
+            return StateBadgePresentation("draft", "Draft", Colours.STATE_DRAFT)
+        if configuration is not None and configuration.analysis_results is not None:
+            return StateBadgePresentation("analysed", "Analysed", Colours.STATE_ANALYSED)
+        return StateBadgePresentation("valid", "Valid", Colours.STATE_VALID)
 
     def _make_default_configuration(
         self,
