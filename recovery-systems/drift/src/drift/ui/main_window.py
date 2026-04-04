@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
+import re
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -61,6 +62,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return Path(__file__).resolve().parents[3] / "data" / "parachute_catalogue.json"
 
+    @staticmethod
+    def _slugify_file_stem(name: str, *, fallback: str) -> str:
+        """Convert a user-facing name into a safe deterministic file stem."""
+
+        stem = re.sub(r"[^a-z0-9]+", "-", name.strip().lower()).strip("-")
+        return stem or fallback
+
     def current_project(self) -> Project | None:
         """Return the current in-memory project."""
 
@@ -107,7 +115,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
-            "Load DRIFT project",
+            "Import DRIFT project",
             str(self._project_path.parent if self._project_path is not None else Path.cwd()),
             "DRIFT Project (*.json)",
         )
@@ -125,7 +133,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._dirty = False
         self._reload_ui_from_model()
         self.statusBar().showMessage(
-            f"Project loaded: {self._project_path.name}.",
+            f"Project imported: {self._project_path.name}.",
             3000,
         )
 
@@ -136,10 +144,14 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         if self._project_path is None:
+            project_name = self.input_panel.project_name() if self._dirty else self._project.project_name
+            default_name = (
+                f"{self._slugify_file_stem(project_name, fallback='untitled-project')}.json"
+            )
             file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
                 self,
                 "Save DRIFT project",
-                str(Path.cwd() / "drift-project.json"),
+                str(Path.cwd() / default_name),
                 "DRIFT Project (*.json)",
             )
             if not file_path:
@@ -200,8 +212,8 @@ class MainWindow(QtWidgets.QMainWindow):
         configuration = self.input_panel.build_configuration(current) if self._dirty else current
         project_name = self.input_panel.project_name() if self._dirty else project.project_name
         default_name = (
-            f"{project_name.strip().replace(' ', '-').lower()}-"
-            f"{configuration.configuration_name.strip().replace(' ', '-').lower()}.md"
+            f"{self._slugify_file_stem(project_name, fallback='untitled-project')}-"
+            f"{self._slugify_file_stem(configuration.configuration_name, fallback='configuration')}.md"
         )
         file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,

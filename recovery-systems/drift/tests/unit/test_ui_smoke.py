@@ -26,6 +26,16 @@ class MainWindowSmokeTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
 
+    def test_project_name_is_used_for_default_file_stems(self) -> None:
+        self.assertEqual(
+            MainWindow._slugify_file_stem("Test project", fallback="untitled-project"),
+            "test-project",
+        )
+        self.assertEqual(
+            MainWindow._slugify_file_stem("  ", fallback="untitled-project"),
+            "untitled-project",
+        )
+
     def test_main_window_bootstraps_three_panel_shell(self) -> None:
         window = MainWindow()
         self.addCleanup(window.close)

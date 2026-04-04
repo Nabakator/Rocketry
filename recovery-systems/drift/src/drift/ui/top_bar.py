@@ -131,15 +131,15 @@ class TopBarWidget(QtWidgets.QWidget):
 
         self.save_button = self._make_action_button(
             tooltip="Save project",
-            theme_icon="document-save",
+            theme_icon="document-save-as",
             fallback_icon=QtWidgets.QStyle.SP_DialogSaveButton,
             fallback_text="S",
         )
         self.load_button = self._make_action_button(
-            tooltip="Load project",
-            theme_icon="document-open",
+            tooltip="Import project",
+            theme_icon="document-save",
             fallback_icon=QtWidgets.QStyle.SP_DialogOpenButton,
-            fallback_text="L",
+            fallback_text="I",
         )
         self.export_button = self._make_action_button(
             tooltip="Export Markdown summary",
