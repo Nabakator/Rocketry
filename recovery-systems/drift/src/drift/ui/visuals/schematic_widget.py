@@ -22,10 +22,11 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
 
     def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
         super().__init__(parent)
+        self.setObjectName("recoverySchematicWidget")
         self._message = "Analyse a configuration to render the recovery schematic."
         self._model: RecoveryVisualModel | None = None
         self._unit_system = "si"
-        self.setMinimumHeight(320)
+        self.setMinimumHeight(340)
 
     def show_message(self, message: str) -> None:
         self._message = message
@@ -44,31 +45,49 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         painter.fillRect(self.rect(), qcolor(Colours.SURFACE_1))
 
+        frame_rect = self.rect().adjusted(1, 1, -1, -1)
+        painter.setPen(QtGui.QPen(qcolor(Colours.PANEL_BORDER), 1))
+        painter.setBrush(qcolor(Colours.SURFACE_0))
+        painter.drawRoundedRect(frame_rect, 4, 4)
+
         if self._model is None:
             painter.setFont(ui_font(point_size=11))
             painter.setPen(qcolor(Colours.MUTED_FOREGROUND))
             painter.drawText(
-                self.rect().adjusted(20, 20, -20, -20),
+                frame_rect.adjusted(20, 20, -20, -20),
                 QtCore.Qt.AlignCenter | QtCore.Qt.TextWordWrap,
                 self._message,
             )
             return
 
-        rect = self.rect().adjusted(24, 24, -24, -24)
-        header_rect = QtCore.QRect(rect.left(), rect.top(), rect.width(), 24)
+        rect = frame_rect.adjusted(18, 16, -18, -16)
+        header_rect = QtCore.QRect(rect.left(), rect.top(), rect.width(), 26)
+
         painter.setFont(ui_font(point_size=10, weight=QtGui.QFont.DemiBold))
         painter.setPen(qcolor(Colours.MUTED_FOREGROUND))
         painter.drawText(
             header_rect,
             QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter,
-            f"Schematic, not to scale. Basis: {self._model.basis_label}",
+            "Profile view. Not to scale.",
+        )
+        self._draw_badge(
+            painter,
+            QtCore.QRect(header_rect.right() - 132, header_rect.top(), 132, header_rect.height()),
+            f"Basis: {self._model.basis_label}",
         )
 
         body_top = header_rect.bottom() + 12
-        body_bottom = rect.bottom() - 12
+        body_bottom = rect.bottom() - 18
 
         painter.setPen(QtGui.QPen(qcolor(Colours.PANEL_BORDER), 2))
         painter.drawLine(rect.left() + 16, body_bottom, rect.right() - 16, body_bottom)
+        painter.setFont(mono_font(point_size=9))
+        painter.setPen(qcolor(Colours.MUTED_FOREGROUND))
+        painter.drawText(
+            QtCore.QRect(rect.left(), body_bottom - 10, 40, 20),
+            QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter,
+            "GND",
+        )
 
         max_altitude_m = max(self._model.max_altitude_m, 1.0)
 
@@ -78,6 +97,14 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
 
         def x_fraction_to_x(x_fraction: float) -> int:
             return int(rect.left() + x_fraction * rect.width())
+
+        guide_altitudes = sorted({marker.altitude_m for marker in self._model.markers if marker.altitude_m > 0.0})
+        guide_pen = QtGui.QPen(qcolor(Colours.PANEL_BORDER), 1)
+        guide_pen.setStyle(QtCore.Qt.DashLine)
+        painter.setPen(guide_pen)
+        for altitude_m in guide_altitudes:
+            y = altitude_to_y(altitude_m)
+            painter.drawLine(rect.left() + 14, y, rect.right() - 14, y)
 
         for segment in self._model.segments:
             x_start = x_fraction_to_x(segment.start_x_fraction)
@@ -121,11 +148,11 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
             elif label_rect.center().x() > x:
                 leader_y = label_rect.center().y()
                 painter.drawLine(x + 6, y, label_rect.left() - 4, leader_y)
-            painter.setFont(mono_font(point_size=9))
-            painter.drawText(
+            self._draw_label_chip(
+                painter,
                 label_rect,
-                alignment,
                 f"{marker.label} ({format_length(marker.altitude_m, self._unit_system)})",
+                alignment=alignment,
             )
 
         painter.end()
@@ -164,7 +191,13 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
             )
             alignment = QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter
 
-        painter.drawText(label_rect, alignment, label)
+        self._draw_label_chip(
+            painter,
+            label_rect,
+            label,
+            text_color=color,
+            alignment=alignment,
+        )
 
     def _layout_marker_labels(
         self,
@@ -220,6 +253,40 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
         if marker.x_fraction >= 0.72:
             return "left"
         return "right"
+
+    def _draw_badge(
+        self,
+        painter: QtGui.QPainter,
+        rect: QtCore.QRect,
+        text: str,
+    ) -> None:
+        badge_rect = rect.adjusted(0, 2, 0, -2)
+        painter.setPen(QtGui.QPen(qcolor(Colours.BORDER), 1))
+        painter.setBrush(qcolor(Colours.SURFACE_1))
+        painter.drawRoundedRect(badge_rect, 3, 3)
+        painter.setFont(mono_font(point_size=8, weight=QtGui.QFont.DemiBold))
+        painter.setPen(qcolor(Colours.MUTED_FOREGROUND))
+        painter.drawText(
+            badge_rect.adjusted(8, 0, -8, 0),
+            QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter,
+            text,
+        )
+
+    def _draw_label_chip(
+        self,
+        painter: QtGui.QPainter,
+        rect: QtCore.QRect,
+        text: str,
+        *,
+        text_color: QtGui.QColor | None = None,
+        alignment: QtCore.Qt.AlignmentFlag = QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter,
+    ) -> None:
+        painter.setPen(QtGui.QPen(qcolor(Colours.BORDER), 1))
+        painter.setBrush(qcolor(Colours.SURFACE_1))
+        painter.drawRoundedRect(rect.adjusted(0, 0, 0, 0), 3, 3)
+        painter.setFont(mono_font(point_size=9))
+        painter.setPen(text_color or qcolor(Colours.FOREGROUND))
+        painter.drawText(rect.adjusted(6, 0, -6, 0), alignment, text)
 
 
 __all__ = ["RecoverySchematicWidget"]

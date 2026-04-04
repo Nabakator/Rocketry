@@ -522,6 +522,80 @@ QLabel#warningCardMessage {{
     color: {Colours.FOREGROUND};
 }}
 
+QFrame#sidebarSection {{
+    background-color: {Colours.SURFACE_1};
+    border: 1px solid {Colours.PANEL_BORDER};
+    border-radius: 4px;
+}}
+
+QLabel#sidebarSectionTitle {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-size: 11px;
+    font-weight: 600;
+}}
+
+QLabel#sidebarSectionNote,
+QLabel#timelineSummaryLabel,
+QLabel#assumptionText,
+QLabel#timelineEventNote {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-size: 10px;
+}}
+
+QWidget#timelineContent,
+QWidget#assumptionsList {{
+    background: transparent;
+}}
+
+QFrame#timelineEvent {{
+    background: transparent;
+    border: none;
+}}
+
+QWidget#timelineRail {{
+    background: transparent;
+    min-width: 14px;
+    max-width: 14px;
+}}
+
+QLabel#timelineDot {{
+    font-size: 12px;
+}}
+
+QLabel#timelineDot[phase="drogue"] {{
+    color: {Colours.PHASE_DROGUE};
+}}
+
+QLabel#timelineDot[phase="main"] {{
+    color: {Colours.PHASE_MAIN};
+}}
+
+QLabel#timelineDot[phase="freefall"] {{
+    color: {Colours.PHASE_FREEFALL};
+}}
+
+QFrame#timelineLine {{
+    background-color: {Colours.PANEL_BORDER};
+    border: none;
+}}
+
+QLabel#timelineMetaLabel {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-size: 10px;
+    font-family: "{mono_family}";
+}}
+
+QLabel#timelineEventLabel {{
+    color: {Colours.FOREGROUND};
+    font-size: 12px;
+    font-weight: 600;
+}}
+
+QLabel#assumptionBullet {{
+    color: {Colours.MUTED_FOREGROUND};
+    font-family: "{mono_family}";
+}}
+
 QLabel[role="metricValue"],
 QLabel[role="mono"] {{
     font-family: "{mono_family}";

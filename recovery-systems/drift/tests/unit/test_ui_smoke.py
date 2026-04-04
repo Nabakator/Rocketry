@@ -116,3 +116,17 @@ class MainWindowSmokeTests(unittest.TestCase):
         self.assertIn("s", window.results_panel.metric_cards["total_time"].value.text())
         self.assertIn("m", window.results_panel.metric_cards["total_drift"].value.text())
         self.assertGreater(window.results_panel.phase_table.rowCount(), 0)
+
+    def test_right_panel_shows_schematic_timeline_and_assumptions(self) -> None:
+        window = MainWindow()
+        self.addCleanup(window.close)
+
+        self.assertEqual(len(window.visuals_panel.assumption_labels), 4)
+        self.assertIn("Vertical descent only.", window.visuals_panel.assumption_labels[0].text())
+
+        window.analyze_current_configuration()
+        self.app.processEvents()
+
+        self.assertEqual(window.visuals_panel.schematic_widget.objectName(), "recoverySchematicWidget")
+        self.assertGreater(len(window.visuals_panel.timeline_event_widgets), 0)
+        self.assertIn("Total descent time", window.visuals_panel.timeline_summary_label.text())
