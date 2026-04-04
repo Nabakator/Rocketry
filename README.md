@@ -1,6 +1,6 @@
-# GU Rocketry
+# Rocketry
 
-GU Rocketry is the umbrella repository for rocketry software and analysis tools, organized by engineering domain first and then by tool.
+Rocketry is the umbrella repository for rocketry software and analysis tools, organized by engineering domain first and then by tool.
 
 ## Overview
 
@@ -15,11 +15,21 @@ That keeps each tool self-contained and avoids mixing tool-specific `src/`, `tes
 
 ## Current repository structure
 
+Current tracked layout:
+
+```text
+.
+├── LICENSE
+├── README.md
+└── recovery-systems/
+    └── drift/
+```
+
 - `recovery-systems/`
   - recovery-system tools and analyses
   - active tool: `recovery-systems/drift/`
-- `propulsion/`
-  - reserved for future propulsion tools
+
+Future domains such as propulsion can be added later using the same domain-first structure.
 
 ## Active tool
 
@@ -63,7 +73,7 @@ cd recovery-systems/drift
 
 From there, use the DRIFT-specific README for setup, running, and testing.
 
-The DRIFT tool README lives at `recovery-systems/drift/README.md`.
+The DRIFT tool README lives at [recovery-systems/drift/README.md](/Users/nathan.sidib/Code/GU%20Rocketry/recovery-systems/drift/README.md).
 
 If future domains are added, they should follow the same pattern:
 
@@ -78,6 +88,6 @@ If future domains are added, they should follow the same pattern:
 
 ## Status
 
-GU Rocketry is currently structured as a multi-domain umbrella repository with DRIFT as the active implemented tool under `recovery-systems/`.
+Rocketry is currently structured as a multi-domain umbrella repository with DRIFT as the active implemented tool under `recovery-systems/`.
 
 The active recovery tool already includes the desktop shell, validated engineering core, comparison workflow, recovery visuals, and Markdown export. Future tools should follow the same domain-first, self-contained layout.

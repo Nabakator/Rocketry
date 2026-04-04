@@ -15,6 +15,14 @@ from drift.formatting import (
 from drift.models import CatalogueItem, Configuration
 
 
+def _humanise(value: str) -> str:
+    return value.replace("_", " ").strip().capitalize()
+
+
+def _display_units_label(unit_system: str) -> str:
+    return "SI" if unit_system == "si" else "Imperial"
+
+
 def render_configuration_markdown(
     *,
     project_name: str,
@@ -34,21 +42,21 @@ def render_configuration_markdown(
         "",
         "## Configuration",
         f"- Name: {configuration.configuration_name}",
-        f"- Recovery mode: {configuration.recovery_mode}",
-        f"- Display units: {configuration.display_unit_system}",
+        f"- Recovery mode: {_humanise(configuration.recovery_mode)}",
+        f"- Display units: {_display_units_label(configuration.display_unit_system)}",
         f"- Rocket mass: {format_mass(configuration.rocket_mass_kg, unit_system)}",
         f"- Safety margin: {configuration.safety_margin_fraction:.3f}",
-        f"- Analysis status: {'analysed' if analysis is not None else 'draft / not analysed'}",
+        f"- Status: {'Analysed' if analysis is not None else 'Draft / not analysed'}",
         "",
         "## Assumptions",
-        f"- Basis label: {analysis.recovery_basis_label if analysis is not None else 'N/A'}",
-        f"- Atmosphere mode: {atmosphere.mode}",
+        f"- Basis: {_humanise(analysis.recovery_basis_label) if analysis is not None else 'N/A'}",
+        f"- Atmosphere mode: {_humanise(atmosphere.mode)}",
         (
             f"- Manual density override: {format_density(atmosphere.manual_density_kg_per_m3, unit_system)}"
             if atmosphere.manual_density_kg_per_m3 is not None
-            else "- Manual density override: inactive"
+            else "- Manual density override: Inactive"
         ),
-        f"- Wind mode: {wind.mode}",
+        f"- Wind mode: {_humanise(wind.mode)}",
     ]
 
     if wind.mode == "constant":
@@ -63,7 +71,7 @@ def render_configuration_markdown(
         [
             "",
             "## Parachutes",
-            "| Role | Family | Cd | Cd Source | Theoretical Diameter | Recommended Diameter | Catalogue Item | Selected Diameter | Resulting Descent Velocity |",
+            "| Role | Family | Cd | Cd source | Theoretical diameter | Recommended diameter | Catalogue item | Selected diameter | Resulting descent rate |",
             "| --- | --- | ---: | --- | --- | --- | --- | --- | --- |",
         ]
     )
@@ -74,10 +82,10 @@ def render_configuration_markdown(
             "| "
             + " | ".join(
                 [
-                    parachute.role,
-                    parachute.family,
+                    _humanise(parachute.role),
+                    _humanise(parachute.family),
                     f"{parachute.cd:.3f}",
-                    parachute.cd_source,
+                    _humanise(parachute.cd_source),
                     format_length(parachute.theoretical_diameter_m, unit_system),
                     format_length(parachute.recommended_diameter_m, unit_system),
                     selected_item.product_name if selected_item is not None else "N/A",
@@ -99,7 +107,7 @@ def render_configuration_markdown(
     else:
         lines.extend(
             [
-                "| Phase | Start Altitude | End Altitude | Velocity | Duration | Drift |",
+                "| Phase | Start altitude | End altitude | Descent rate | Duration | Drift |",
                 "| --- | --- | --- | --- | --- | --- |",
             ]
         )
@@ -108,7 +116,7 @@ def render_configuration_markdown(
                 "| "
                 + " | ".join(
                     [
-                        phase.phase_name,
+                        _humanise(phase.phase_name),
                         format_length(phase.start_altitude_m, unit_system),
                         format_length(phase.end_altitude_m, unit_system),
                         format_velocity(phase.nominal_descent_velocity_mps, unit_system),

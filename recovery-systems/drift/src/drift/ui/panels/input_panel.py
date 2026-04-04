@@ -27,15 +27,16 @@ from drift.ui.display_units import (
     velocity_to_si,
     velocity_unit_label,
 )
+from drift.ui.theme import SPACING, configure_box_layout, configure_form_layout, configure_grid_layout
 
-RECOVERY_MODE_ITEMS = [("single", "Single Deployment"), ("dual", "Dual Deployment")]
+RECOVERY_MODE_ITEMS = [("single", "Single"), ("dual", "Dual")]
 UNIT_SYSTEM_ITEMS = [("si", "SI"), ("imperial", "Imperial")]
 ATMOSPHERE_MODE_ITEMS = [
-    ("standard_atmosphere", "Standard Atmosphere"),
-    ("manual_density", "Manual Density Override"),
+    ("standard_atmosphere", "Standard atmosphere"),
+    ("manual_density", "Manual density override"),
 ]
-WIND_MODE_ITEMS = [("constant", "Constant Wind"), ("two_layer", "Two-Layer Wind")]
-CD_SOURCE_ITEMS = [("preset", "Preset"), ("manual_override", "Manual Override")]
+WIND_MODE_ITEMS = [("constant", "Constant wind"), ("two_layer", "Two-layer wind")]
+CD_SOURCE_ITEMS = [("preset", "Preset"), ("manual_override", "Manual override")]
 PARACHUTE_FAMILY_ITEMS = [
     ("flat_circular", "Flat Circular"),
     ("hemispherical", "Hemispherical"),
@@ -70,93 +71,114 @@ class InputPanel(QtWidgets.QWidget):
 
     def _build_ui(self) -> None:
         layout = QtWidgets.QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        configure_box_layout(layout, margins=(0, 0, 0, 0), spacing=0)
 
-        button_row = QtWidgets.QHBoxLayout()
+        self.project_actions_widget = QtWidgets.QWidget()
+        self.project_actions_widget.hide()
+        button_row = QtWidgets.QHBoxLayout(self.project_actions_widget)
+        button_row.setContentsMargins(0, 0, 0, 0)
+        button_row.setSpacing(SPACING.sm)
         self.new_project_button = QtWidgets.QPushButton("New")
         self.open_project_button = QtWidgets.QPushButton("Open")
         self.save_project_button = QtWidgets.QPushButton("Save")
         button_row.addWidget(self.new_project_button)
         button_row.addWidget(self.open_project_button)
         button_row.addWidget(self.save_project_button)
-        layout.addLayout(button_row)
+        layout.addWidget(self.project_actions_widget)
 
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidgetResizable(True)
-        layout.addWidget(scroll_area)
+        scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+        layout.addWidget(scroll_area, 1)
 
         content = QtWidgets.QWidget()
         scroll_area.setWidget(content)
         content_layout = QtWidgets.QVBoxLayout(content)
-        content_layout.setContentsMargins(0, 0, 0, 0)
+        configure_box_layout(content_layout, margins=(SPACING.lg, SPACING.md, SPACING.lg, SPACING.lg))
 
-        project_box = QtWidgets.QGroupBox("Project")
+        project_box = QtWidgets.QGroupBox("PROJECT")
         project_form = QtWidgets.QFormLayout(project_box)
+        configure_form_layout(project_form)
         self.project_name_edit = QtWidgets.QLineEdit()
         project_form.addRow("Project name", self.project_name_edit)
         content_layout.addWidget(project_box)
 
-        configuration_box = QtWidgets.QGroupBox("Configuration")
-        configuration_layout = QtWidgets.QGridLayout(configuration_box)
+        configuration_box = QtWidgets.QGroupBox("CONFIGURATION")
+        configuration_layout = QtWidgets.QVBoxLayout(configuration_box)
+        configure_box_layout(configuration_layout)
         self.configuration_combo = QtWidgets.QComboBox()
-        self.new_configuration_button = QtWidgets.QPushButton("Add")
+        self.configuration_combo.hide()
+        self.configuration_button_group = QtWidgets.QButtonGroup(self)
+        self.configuration_button_group.setExclusive(True)
+        self.configuration_tab_buttons: dict[str, QtWidgets.QPushButton] = {}
+        self.configuration_tabs_widget = QtWidgets.QWidget()
+        self.configuration_tabs_layout = QtWidgets.QHBoxLayout(self.configuration_tabs_widget)
+        self.configuration_tabs_layout.setContentsMargins(0, 0, 0, 0)
+        self.configuration_tabs_layout.setSpacing(SPACING.xs)
+        configuration_layout.addWidget(self.configuration_tabs_widget)
+
+        configuration_form = QtWidgets.QFormLayout()
+        configure_form_layout(configuration_form, margins=(0, 0, 0, 0))
+        self.new_configuration_button = QtWidgets.QPushButton("+")
+        self.new_configuration_button.setObjectName("configAddButton")
         self.configuration_name_edit = QtWidgets.QLineEdit()
         self.display_unit_combo = QtWidgets.QComboBox()
-        self.recovery_mode_combo = QtWidgets.QComboBox()
         for value, label in UNIT_SYSTEM_ITEMS:
             self.display_unit_combo.addItem(label, value)
-        for value, label in RECOVERY_MODE_ITEMS:
-            self.recovery_mode_combo.addItem(label, value)
-        configuration_layout.addWidget(QtWidgets.QLabel("Select"), 0, 0)
-        configuration_layout.addWidget(self.configuration_combo, 0, 1)
-        configuration_layout.addWidget(self.new_configuration_button, 0, 2)
-        configuration_layout.addWidget(QtWidgets.QLabel("Name"), 1, 0)
-        configuration_layout.addWidget(self.configuration_name_edit, 1, 1, 1, 2)
-        configuration_layout.addWidget(QtWidgets.QLabel("Units"), 2, 0)
-        configuration_layout.addWidget(self.display_unit_combo, 2, 1, 1, 2)
-        configuration_layout.addWidget(QtWidgets.QLabel("Recovery mode"), 3, 0)
-        configuration_layout.addWidget(self.recovery_mode_combo, 3, 1, 1, 2)
+        configuration_form.addRow("Name", self.configuration_name_edit)
+        configuration_form.addRow("Units", self.display_unit_combo)
+        configuration_layout.addLayout(configuration_form)
         content_layout.addWidget(configuration_box)
 
-        general_box = QtWidgets.QGroupBox("General Inputs")
+        deployment_box = QtWidgets.QGroupBox("DEPLOYMENT TYPE")
+        deployment_layout = QtWidgets.QVBoxLayout(deployment_box)
+        configure_box_layout(deployment_layout)
+        self.recovery_mode_combo = QtWidgets.QComboBox()
+        self.recovery_mode_combo.hide()
+        for value, label in RECOVERY_MODE_ITEMS:
+            self.recovery_mode_combo.addItem(label, value)
+        segmented_widget = QtWidgets.QWidget()
+        segmented_widget.setObjectName("segmentedControl")
+        segmented_layout = QtWidgets.QHBoxLayout(segmented_widget)
+        segmented_layout.setContentsMargins(2, 2, 2, 2)
+        segmented_layout.setSpacing(2)
+        self.single_mode_button = QtWidgets.QPushButton("Single")
+        self.single_mode_button.setObjectName("modeToggleButton")
+        self.single_mode_button.setCheckable(True)
+        self.dual_mode_button = QtWidgets.QPushButton("Dual")
+        self.dual_mode_button.setObjectName("modeToggleButton")
+        self.dual_mode_button.setCheckable(True)
+        self.recovery_mode_button_group = QtWidgets.QButtonGroup(self)
+        self.recovery_mode_button_group.setExclusive(True)
+        self.recovery_mode_button_group.addButton(self.single_mode_button)
+        self.recovery_mode_button_group.addButton(self.dual_mode_button)
+        segmented_layout.addWidget(self.single_mode_button)
+        segmented_layout.addWidget(self.dual_mode_button)
+        deployment_layout.addWidget(segmented_widget)
+        self.deployment_helper_label = QtWidgets.QLabel()
+        self.deployment_helper_label.setObjectName("deploymentHelper")
+        self.deployment_helper_label.setWordWrap(True)
+        deployment_layout.addWidget(self.deployment_helper_label)
+        content_layout.addWidget(deployment_box)
+
+        general_box = QtWidgets.QGroupBox("ROCKET")
         general_form = QtWidgets.QFormLayout(general_box)
+        configure_form_layout(general_form)
         self.mass_spin = self._double_spin(0.001, 100000.0, 3, 0.5)
         self.safety_margin_spin = self._double_spin(0.0, 10.0, 3, 0.05)
-        general_form.addRow("Rocket mass", self.mass_spin)
+        general_form.addRow("Mass", self.mass_spin)
         general_form.addRow("Safety margin", self.safety_margin_spin)
         content_layout.addWidget(general_box)
 
-        atmosphere_box = QtWidgets.QGroupBox("Atmosphere")
-        atmosphere_form = QtWidgets.QFormLayout(atmosphere_box)
-        self.atmosphere_mode_combo = QtWidgets.QComboBox()
-        for value, label in ATMOSPHERE_MODE_ITEMS:
-            self.atmosphere_mode_combo.addItem(label, value)
-        self.manual_density_spin = self._double_spin(0.0001, 100.0, 4, 0.01)
-        atmosphere_form.addRow("Mode", self.atmosphere_mode_combo)
-        atmosphere_form.addRow("Manual density", self.manual_density_spin)
-        content_layout.addWidget(atmosphere_box)
-
-        wind_box = QtWidgets.QGroupBox("Wind")
-        wind_form = QtWidgets.QFormLayout(wind_box)
-        self.wind_mode_combo = QtWidgets.QComboBox()
-        for value, label in WIND_MODE_ITEMS:
-            self.wind_mode_combo.addItem(label, value)
-        self.constant_wind_spin = self._double_spin(0.0, 1000.0, 3, 0.5)
-        self.aloft_wind_spin = self._double_spin(0.0, 1000.0, 3, 0.5)
-        self.ground_wind_spin = self._double_spin(0.0, 1000.0, 3, 0.5)
-        wind_form.addRow("Mode", self.wind_mode_combo)
-        wind_form.addRow("Constant wind", self.constant_wind_spin)
-        wind_form.addRow("Aloft wind", self.aloft_wind_spin)
-        wind_form.addRow("Ground wind", self.ground_wind_spin)
-        content_layout.addWidget(wind_box)
-
-        altitude_box = QtWidgets.QGroupBox("Altitudes")
+        altitude_box = QtWidgets.QGroupBox("RECOVERY ALTITUDES")
         altitude_layout = QtWidgets.QVBoxLayout(altitude_box)
+        configure_box_layout(altitude_layout)
         self.altitude_stack = QtWidgets.QStackedWidget()
         altitude_layout.addWidget(self.altitude_stack)
 
         single_altitudes = QtWidgets.QWidget()
         single_form = QtWidgets.QFormLayout(single_altitudes)
+        configure_form_layout(single_form)
         self.single_deployment_altitude_spin = self._double_spin(0.0, 100000.0, 2, 10.0)
         self.single_apogee_checkbox = QtWidgets.QCheckBox("Apogee known")
         self.single_apogee_spin = self._double_spin(0.0, 100000.0, 2, 10.0)
@@ -166,6 +188,7 @@ class InputPanel(QtWidgets.QWidget):
 
         dual_altitudes = QtWidgets.QWidget()
         dual_form = QtWidgets.QFormLayout(dual_altitudes)
+        configure_form_layout(dual_form)
         self.dual_apogee_checkbox = QtWidgets.QCheckBox("Apogee known")
         self.dual_apogee_spin = self._double_spin(0.0, 100000.0, 2, 10.0)
         self.dual_drogue_altitude_spin = self._double_spin(0.0, 100000.0, 2, 10.0)
@@ -176,33 +199,86 @@ class InputPanel(QtWidgets.QWidget):
         self.altitude_stack.addWidget(dual_altitudes)
         content_layout.addWidget(altitude_box)
 
-        parachute_box = QtWidgets.QGroupBox("Parachutes")
-        parachute_layout = QtWidgets.QVBoxLayout(parachute_box)
         self.parachute_stack = QtWidgets.QStackedWidget()
-        parachute_layout.addWidget(self.parachute_stack)
-        self.single_parachute_group = self._build_parachute_group("Single parachute")
+        self.single_parachute_group = self._build_parachute_group("MAIN")
         self.dual_parachute_page = QtWidgets.QWidget()
         dual_page_layout = QtWidgets.QVBoxLayout(self.dual_parachute_page)
-        dual_page_layout.setContentsMargins(0, 0, 0, 0)
-        self.drogue_parachute_group = self._build_parachute_group("Drogue parachute")
-        self.main_parachute_group = self._build_parachute_group("Main parachute")
+        configure_box_layout(dual_page_layout, margins=(0, 0, 0, 0))
+        self.drogue_parachute_group = self._build_parachute_group("DROGUE")
+        self.main_parachute_group = self._build_parachute_group("MAIN")
         dual_page_layout.addWidget(self.drogue_parachute_group["box"])
         dual_page_layout.addWidget(self.main_parachute_group["box"])
         dual_page_layout.addStretch(1)
         self.parachute_stack.addWidget(self.single_parachute_group["box"])
         self.parachute_stack.addWidget(self.dual_parachute_page)
-        content_layout.addWidget(parachute_box)
+        content_layout.addWidget(self.parachute_stack)
+
+        atmosphere_box = QtWidgets.QGroupBox("ATMOSPHERE")
+        atmosphere_layout = QtWidgets.QVBoxLayout(atmosphere_box)
+        configure_box_layout(atmosphere_layout)
+        atmosphere_form = QtWidgets.QFormLayout()
+        configure_form_layout(atmosphere_form, margins=(0, 0, 0, 0))
+        self.atmosphere_mode_combo = QtWidgets.QComboBox()
+        for value, label in ATMOSPHERE_MODE_ITEMS:
+            self.atmosphere_mode_combo.addItem(label, value)
+        self.manual_density_spin = self._double_spin(0.0001, 100.0, 4, 0.01)
+        atmosphere_form.addRow("Mode", self.atmosphere_mode_combo)
+        atmosphere_form.addRow("Manual density", self.manual_density_spin)
+        atmosphere_layout.addLayout(atmosphere_form)
+        self.atmosphere_helper_label = QtWidgets.QLabel(
+            "Air density is taken from the ISA model unless a manual override is active."
+        )
+        self.atmosphere_helper_label.setObjectName("atmosphereHelper")
+        self.atmosphere_helper_label.setWordWrap(True)
+        atmosphere_layout.addWidget(self.atmosphere_helper_label)
+        content_layout.addWidget(atmosphere_box)
+
+        wind_box = QtWidgets.QGroupBox("WIND / DRIFT ESTIMATE")
+        wind_layout = QtWidgets.QVBoxLayout(wind_box)
+        configure_box_layout(wind_layout)
+        wind_form = QtWidgets.QFormLayout()
+        configure_form_layout(wind_form, margins=(0, 0, 0, 0))
+        self.wind_mode_combo = QtWidgets.QComboBox()
+        for value, label in WIND_MODE_ITEMS:
+            self.wind_mode_combo.addItem(label, value)
+        self.constant_wind_spin = self._double_spin(0.0, 1000.0, 3, 0.5)
+        self.aloft_wind_spin = self._double_spin(0.0, 1000.0, 3, 0.5)
+        self.ground_wind_spin = self._double_spin(0.0, 1000.0, 3, 0.5)
+        wind_form.addRow("Mode", self.wind_mode_combo)
+        wind_form.addRow("Constant wind", self.constant_wind_spin)
+        wind_form.addRow("Aloft wind", self.aloft_wind_spin)
+        wind_form.addRow("Ground wind", self.ground_wind_spin)
+        wind_layout.addLayout(wind_form)
+        self.wind_helper_label = QtWidgets.QLabel(
+            "Drift is a first-order estimate based on wind speed and vertical descent only."
+        )
+        self.wind_helper_label.setObjectName("windHelper")
+        self.wind_helper_label.setWordWrap(True)
+        wind_layout.addWidget(self.wind_helper_label)
+        content_layout.addWidget(wind_box)
 
         self.note_label = QtWidgets.QLabel(
-            "Inputs are edited through the service-backed shell. Values are stored in canonical SI."
+            "Values are edited in the desktop shell and stored internally in SI units."
         )
+        self.note_label.setProperty("role", "helper")
         self.note_label.setWordWrap(True)
         content_layout.addWidget(self.note_label)
-
-        self.analyze_button = QtWidgets.QPushButton("Analyse")
-        self.analyze_button.setDefault(True)
-        content_layout.addWidget(self.analyze_button)
         content_layout.addStretch(1)
+
+        self.footer_widget = QtWidgets.QWidget()
+        self.footer_widget.setObjectName("leftPanelFooter")
+        footer_layout = QtWidgets.QVBoxLayout(self.footer_widget)
+        configure_box_layout(footer_layout, margins=(SPACING.lg, SPACING.md, SPACING.lg, SPACING.lg))
+        self.panel_state_label = QtWidgets.QLabel("Inputs are valid. Analyse to update the results.")
+        self.panel_state_label.setObjectName("panelStateLabel")
+        self.panel_state_label.setProperty("state", "valid")
+        self.panel_state_label.setWordWrap(True)
+        footer_layout.addWidget(self.panel_state_label)
+        self.analyze_button = QtWidgets.QPushButton("Analyse")
+        self.analyze_button.setObjectName("analyseButton")
+        self.analyze_button.setDefault(True)
+        footer_layout.addWidget(self.analyze_button)
+        layout.addWidget(self.footer_widget)
 
     def _connect_signals(self) -> None:
         self.new_project_button.clicked.connect(self.new_project_requested)
@@ -211,6 +287,8 @@ class InputPanel(QtWidgets.QWidget):
         self.new_configuration_button.clicked.connect(self.new_configuration_requested)
         self.analyze_button.clicked.connect(self.analyze_requested)
         self.configuration_combo.currentIndexChanged.connect(self._emit_configuration_selected)
+        self.single_mode_button.clicked.connect(lambda: self._set_recovery_mode("single"))
+        self.dual_mode_button.clicked.connect(lambda: self._set_recovery_mode("dual"))
         self.recovery_mode_combo.currentIndexChanged.connect(self._on_recovery_mode_changed)
         self.atmosphere_mode_combo.currentIndexChanged.connect(self._on_atmosphere_mode_changed)
         self.wind_mode_combo.currentIndexChanged.connect(self._on_wind_mode_changed)
@@ -271,11 +349,15 @@ class InputPanel(QtWidgets.QWidget):
         spin.setRange(minimum, maximum)
         spin.setDecimals(decimals)
         spin.setSingleStep(step)
+        spin.setAlignment(QtCore.Qt.AlignRight)
+        spin.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        spin.setMinimumWidth(132)
         return spin
 
     def _build_parachute_group(self, title: str) -> dict[str, object]:
         box = QtWidgets.QGroupBox(title)
         form = QtWidgets.QFormLayout(box)
+        configure_form_layout(form)
         family_combo = QtWidgets.QComboBox()
         for value, label in PARACHUTE_FAMILY_ITEMS:
             family_combo.addItem(label, value)
@@ -287,7 +369,7 @@ class InputPanel(QtWidgets.QWidget):
         form.addRow("Family", family_combo)
         form.addRow("Cd source", cd_source_combo)
         form.addRow("Cd", cd_spin)
-        form.addRow("Target descent velocity", target_velocity_spin)
+        form.addRow("Target descent rate", target_velocity_spin)
         return {
             "box": box,
             "family": family_combo,
@@ -314,6 +396,7 @@ class InputPanel(QtWidgets.QWidget):
                         active_index = index
                         break
             self.configuration_combo.setCurrentIndex(active_index)
+            self._rebuild_configuration_tabs()
         finally:
             self._loading = False
 
@@ -398,6 +481,7 @@ class InputPanel(QtWidgets.QWidget):
             self._update_atmosphere_mode_ui(configuration.atmosphere_settings.mode)
             self._update_wind_mode_ui(configuration.wind_settings.mode)
             self._sync_optional_state()
+            self._rebuild_configuration_tabs()
         finally:
             self._loading = False
 
@@ -521,6 +605,14 @@ class InputPanel(QtWidgets.QWidget):
     def project_name(self) -> str:
         return self.project_name_edit.text().strip() or "Untitled Project"
 
+    def set_state_hint(self, state_key: str, message: str) -> None:
+        """Update the footer state hint using existing shell state."""
+
+        self.panel_state_label.setText(message)
+        self.panel_state_label.setProperty("state", state_key)
+        self.style().unpolish(self.panel_state_label)
+        self.style().polish(self.panel_state_label)
+
     def _build_parachute_spec(
         self,
         group: dict[str, object],
@@ -573,6 +665,45 @@ class InputPanel(QtWidgets.QWidget):
         if index >= 0:
             combo.setCurrentIndex(index)
 
+    def _rebuild_configuration_tabs(self) -> None:
+        for button in self.configuration_button_group.buttons():
+            self.configuration_button_group.removeButton(button)
+        while self.configuration_tabs_layout.count():
+            item = self.configuration_tabs_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None and widget is not self.new_configuration_button:
+                widget.deleteLater()
+
+        self.configuration_tab_buttons.clear()
+        checked_id = self.configuration_combo.currentData()
+        for index in range(self.configuration_combo.count()):
+            configuration_name = self.configuration_combo.itemText(index)
+            configuration_id = self.configuration_combo.itemData(index)
+            button = QtWidgets.QPushButton(configuration_name)
+            button.setObjectName("configTabButton")
+            button.setCheckable(True)
+            button.setChecked(configuration_id == checked_id)
+            button.clicked.connect(
+                lambda _checked=False, config_id=configuration_id: self._activate_configuration_tab(
+                    config_id
+                )
+            )
+            self.configuration_tabs_layout.addWidget(button, 1)
+            self.configuration_button_group.addButton(button)
+            self.configuration_tab_buttons[configuration_id] = button
+
+        self.configuration_tabs_layout.addWidget(self.new_configuration_button, 0)
+
+    def _activate_configuration_tab(self, configuration_id: str) -> None:
+        if self._loading:
+            return
+        index = self.configuration_combo.findData(configuration_id)
+        if index >= 0 and index != self.configuration_combo.currentIndex():
+            self.configuration_combo.setCurrentIndex(index)
+
+    def _set_recovery_mode(self, mode: str) -> None:
+        self._set_combo_data(self.recovery_mode_combo, mode)
+
     def _emit_configuration_selected(self) -> None:
         if self._loading:
             return
@@ -583,6 +714,11 @@ class InputPanel(QtWidgets.QWidget):
     def _emit_draft_changed(self) -> None:
         if self._loading:
             return
+        current_button = self.configuration_tab_buttons.get(self.configuration_combo.currentData())
+        if current_button is not None:
+            current_button.setText(
+                self.configuration_name_edit.text().strip() or self.configuration_combo.currentText()
+            )
         self.draft_changed.emit()
 
     def _on_recovery_mode_changed(self) -> None:
@@ -591,6 +727,16 @@ class InputPanel(QtWidgets.QWidget):
         self._emit_draft_changed()
 
     def _update_recovery_mode_ui(self, mode: str) -> None:
+        self.single_mode_button.setChecked(mode == "single")
+        self.dual_mode_button.setChecked(mode == "dual")
+        if mode == "dual":
+            self.deployment_helper_label.setText(
+                "Drogue deploys at apogee, main deploys at a set altitude."
+            )
+        else:
+            self.deployment_helper_label.setText(
+                "Single parachute deploys at apogee. No staging."
+            )
         if mode == "dual":
             self.altitude_stack.setCurrentIndex(1)
             self.parachute_stack.setCurrentIndex(1)

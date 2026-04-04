@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
+import re
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -20,6 +21,8 @@ from drift.services import AnalysisError, analyze_configuration, validate_config
 from drift.services.export import save_configuration_markdown
 from drift.services.persistence import load_catalogue, load_project, save_project
 from drift.ui.panels import InputPanel, ResultsPanel
+from drift.ui.theme import Colours, apply_theme, configure_box_layout
+from drift.ui.top_bar import StateBadgePresentation, TopBarWidget
 from drift.ui.visuals import VisualsPanel
 
 
@@ -33,6 +36,7 @@ class MainWindow(QtWidgets.QMainWindow):
         parent: QtWidgets.QWidget | None = None,
     ) -> None:
         super().__init__(parent)
+        apply_theme(QtWidgets.QApplication.instance())
         self._catalogue_path = (
             Path(catalogue_path)
             if catalogue_path is not None
@@ -43,6 +47,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._project_path: Path | None = None
         self._dirty = False
 
+        self.setObjectName("mainWindow")
         self.setWindowTitle(APP_FULL_NAME)
         self.resize(1680, 940)
 
@@ -56,6 +61,13 @@ class MainWindow(QtWidgets.QMainWindow):
         """Return the default catalogue path bundled with the repository."""
 
         return Path(__file__).resolve().parents[3] / "data" / "parachute_catalogue.json"
+
+    @staticmethod
+    def _slugify_file_stem(name: str, *, fallback: str) -> str:
+        """Convert a user-facing name into a safe deterministic file stem."""
+
+        stem = re.sub(r"[^a-z0-9]+", "-", name.strip().lower()).strip("-")
+        return stem or fallback
 
     def current_project(self) -> Project | None:
         """Return the current in-memory project."""
@@ -96,14 +108,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self._project_path = None
         self._dirty = False
         self._reload_ui_from_model()
-        self.statusBar().showMessage("New DRIFT project created.", 3000)
+        self.statusBar().showMessage("New project ready.", 3000)
 
     def open_project(self) -> None:
         """Open a project using a native file dialog."""
 
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
-            "Open DRIFT Project",
+            "Import DRIFT project",
             str(self._project_path.parent if self._project_path is not None else Path.cwd()),
             "DRIFT Project (*.json)",
         )
@@ -121,7 +133,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._dirty = False
         self._reload_ui_from_model()
         self.statusBar().showMessage(
-            f"Loaded project from {self._project_path.name}.",
+            f"Project imported: {self._project_path.name}.",
             3000,
         )
 
@@ -132,10 +144,14 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         if self._project_path is None:
+            project_name = self.input_panel.project_name() if self._dirty else self._project.project_name
+            default_name = (
+                f"{self._slugify_file_stem(project_name, fallback='untitled-project')}.json"
+            )
             file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
                 self,
-                "Save DRIFT Project",
-                str(Path.cwd() / "drift-project.json"),
+                "Save DRIFT project",
+                str(Path.cwd() / default_name),
                 "DRIFT Project (*.json)",
             )
             if not file_path:
@@ -157,7 +173,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._project_path = saved_path
         self._dirty = False
         self._reload_ui_from_model()
-        self.statusBar().showMessage(f"Saved project to {saved_path.name}.", 3000)
+        self.statusBar().showMessage(f"Project saved: {saved_path.name}.", 3000)
         return saved_path
 
     def create_configuration(self) -> None:
@@ -196,12 +212,12 @@ class MainWindow(QtWidgets.QMainWindow):
         configuration = self.input_panel.build_configuration(current) if self._dirty else current
         project_name = self.input_panel.project_name() if self._dirty else project.project_name
         default_name = (
-            f"{project_name.strip().replace(' ', '-').lower()}-"
-            f"{configuration.configuration_name.strip().replace(' ', '-').lower()}.md"
+            f"{self._slugify_file_stem(project_name, fallback='untitled-project')}-"
+            f"{self._slugify_file_stem(configuration.configuration_name, fallback='configuration')}.md"
         )
         file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,
-            "Export DRIFT Markdown Summary",
+            "Export Markdown summary",
             str(Path.cwd() / default_name),
             "Markdown (*.md)",
         )
@@ -215,7 +231,7 @@ class MainWindow(QtWidgets.QMainWindow):
             path=file_path,
         )
         self.statusBar().showMessage(
-            f"Exported Markdown summary to {saved_path.name}.",
+            f"Markdown summary exported: {saved_path.name}.",
             3000,
         )
 
@@ -247,7 +263,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self._sync_project_metadata_from_panel(touch_updated_at=True)
             self._dirty = False
             self._reload_ui_from_model()
-            QtWidgets.QMessageBox.critical(self, "DRIFT Analysis Error", str(error))
+            QtWidgets.QMessageBox.critical(self, "DRIFT analysis error", str(error))
             self.statusBar().showMessage(str(error), 5000)
             return
 
@@ -255,47 +271,48 @@ class MainWindow(QtWidgets.QMainWindow):
         self._sync_project_metadata_from_panel(touch_updated_at=True)
         self._dirty = False
         self._reload_ui_from_model()
-        self.statusBar().showMessage("Analysis completed.", 3000)
+        self.statusBar().showMessage("Analysis complete.", 3000)
 
     def _build_ui(self) -> None:
+        self.top_bar = TopBarWidget(self)
         self.input_panel = InputPanel(self)
+        self.input_panel.setObjectName("leftPanel")
+        self.input_panel.setMinimumWidth(300)
         self.results_panel = ResultsPanel(self)
+        self.results_panel.setObjectName("centrePanel")
+        self.results_panel.setMinimumWidth(400)
         self.visuals_panel = VisualsPanel(self)
+        self.visuals_panel.setObjectName("rightPanel")
+        self.visuals_panel.setMinimumWidth(260)
 
         self.main_splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        self.main_splitter.setObjectName("mainSplitter")
+        self.main_splitter.setChildrenCollapsible(False)
+        self.main_splitter.setHandleWidth(1)
         self.main_splitter.addWidget(self.input_panel)
         self.main_splitter.addWidget(self.results_panel)
         self.main_splitter.addWidget(self.visuals_panel)
-        self.main_splitter.setStretchFactor(0, 2)
-        self.main_splitter.setStretchFactor(1, 3)
-        self.main_splitter.setStretchFactor(2, 2)
-        self.main_splitter.setSizes([440, 700, 440])
-        self.setCentralWidget(self.main_splitter)
+        self.main_splitter.setStretchFactor(0, 0)
+        self.main_splitter.setStretchFactor(1, 1)
+        self.main_splitter.setStretchFactor(2, 0)
+        self.main_splitter.setSizes([320, 840, 280])
 
-        file_menu = self.menuBar().addMenu("&File")
-        new_action = file_menu.addAction("New Project")
-        open_action = file_menu.addAction("Open Project...")
-        save_action = file_menu.addAction("Save Project")
-        export_action = file_menu.addAction("Export Markdown...")
-        file_menu.addSeparator()
-        close_action = file_menu.addAction("Close Window")
+        shell = QtWidgets.QWidget(self)
+        shell_layout = QtWidgets.QVBoxLayout(shell)
+        configure_box_layout(shell_layout, margins=(0, 0, 0, 0), spacing=0)
+        shell_layout.addWidget(self.top_bar)
+        shell_layout.addWidget(self.main_splitter, 1)
+        self.setCentralWidget(shell)
 
-        run_menu = self.menuBar().addMenu("&Run")
-        analyze_action = run_menu.addAction("Analyse")
-
-        new_action.triggered.connect(self.new_project)
-        open_action.triggered.connect(self.open_project)
-        save_action.triggered.connect(self.save_project_file)
-        export_action.triggered.connect(self.export_markdown_file)
-        close_action.triggered.connect(self.close)
-        analyze_action.triggered.connect(self.analyze_current_configuration)
-
-        self.statusBar().showMessage("DRIFT desktop shell ready.")
+        self.statusBar().setObjectName("statusBar")
+        self.statusBar().showMessage("Ready.")
 
     def _connect_signals(self) -> None:
-        self.input_panel.new_project_requested.connect(self.new_project)
-        self.input_panel.open_project_requested.connect(self.open_project)
-        self.input_panel.save_project_requested.connect(self.save_project_file)
+        self.top_bar.new_project_requested.connect(self.new_project)
+        self.top_bar.load_requested.connect(self.open_project)
+        self.top_bar.save_requested.connect(self.save_project_file)
+        self.top_bar.export_requested.connect(self.export_markdown_file)
+        self.top_bar.reset_requested.connect(self.reset_current_draft)
         self.input_panel.new_configuration_requested.connect(self.create_configuration)
         self.input_panel.configuration_selected.connect(self._on_configuration_selected)
         self.input_panel.analyze_requested.connect(self.analyze_current_configuration)
@@ -319,14 +336,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _refresh_output_panels(self) -> None:
         project = self._project
-        current = self.current_configuration()
-
-        if self._dirty and current is not None:
-            display_configuration = self.input_panel.build_configuration(current)
-            validation_issues = []
-        else:
-            display_configuration = current
-            validation_issues = self._validation_issues_for_configuration(current)
+        state_configuration, display_configuration, state_validation_issues = self._display_snapshot()
+        validation_issues = [] if self._dirty else state_validation_issues
 
         unit_system = (
             display_configuration.display_unit_system
@@ -345,6 +356,18 @@ class MainWindow(QtWidgets.QMainWindow):
             validation_issues=validation_issues,
             dirty=self._dirty,
         )
+        self._update_top_bar(state_configuration, state_validation_issues)
+
+    def reset_current_draft(self) -> None:
+        """Discard pending draft edits and reload the active configuration."""
+
+        if not self._dirty:
+            self.statusBar().showMessage("No draft edits to reset.", 3000)
+            return
+
+        self._dirty = False
+        self._reload_ui_from_model()
+        self.statusBar().showMessage("Draft edits reset.", 3000)
 
     def _update_window_title(self) -> None:
         if self._project is None:
@@ -430,6 +453,68 @@ class MainWindow(QtWidgets.QMainWindow):
             return []
         return validate_configuration(configuration).issues
 
+    def _display_snapshot(
+        self,
+    ) -> tuple[Configuration | None, Configuration | None, list]:
+        current = self.current_configuration()
+        if self._dirty and current is not None:
+            state_configuration = self.input_panel.build_configuration(current)
+            display_configuration = (
+                current if current.analysis_results is not None else state_configuration
+            )
+        else:
+            state_configuration = current
+            display_configuration = current
+        validation_issues = self._validation_issues_for_configuration(state_configuration)
+        return state_configuration, display_configuration, validation_issues
+
+    def _update_top_bar(
+        self,
+        state_configuration: Configuration | None,
+        validation_issues: list,
+    ) -> None:
+        project_name = (
+            self.input_panel.project_name()
+            if self._dirty
+            else (self._project.project_name if self._project is not None else "Untitled Project")
+        )
+        file_name = self._project_path.name if self._project_path is not None else None
+        state_presentation = self._state_badge_presentation(state_configuration, validation_issues)
+        self.top_bar.set_project_context(project_name, file_name=file_name)
+        self.top_bar.set_state(state_presentation)
+        self.top_bar.set_action_state(
+            has_project=self._project is not None,
+            has_configuration=state_configuration is not None,
+            can_reset=self._dirty,
+        )
+        self.input_panel.set_state_hint(
+            state_presentation.key,
+            self._panel_state_message(state_presentation.key),
+        )
+
+    def _state_badge_presentation(
+        self,
+        configuration: Configuration | None,
+        validation_issues: list,
+    ) -> StateBadgePresentation:
+        if self._dirty:
+            return StateBadgePresentation("draft", "Draft", Colours.STATE_DRAFT)
+        if validation_issues:
+            return StateBadgePresentation("invalid", "Invalid", Colours.STATE_INVALID)
+        if configuration is not None and configuration.analysis_results is not None:
+            return StateBadgePresentation("analysed", "Analysed", Colours.STATE_ANALYSED)
+        return StateBadgePresentation("valid", "Valid", Colours.STATE_VALID)
+
+    @staticmethod
+    def _panel_state_message(state_key: str) -> str:
+        messages = {
+            "draft": "Draft edits are pending. Current results are from the last analysis.",
+            "valid": "Inputs are valid. Analyse to generate results.",
+            "analysed": "Results are current.",
+            "invalid": "Inputs are invalid. Resolve the validation issues.",
+        }
+        return messages.get(state_key, "Inputs are valid. Analyse to generate results.")
+
     def _make_default_configuration(
         self,
         configuration_id: str,
@@ -481,6 +566,7 @@ def main() -> int:
     owns_application = app is None
     if app is None:
         app = QtWidgets.QApplication([])
+        apply_theme(app)
         app.setApplicationDisplayName(APP_FULL_NAME)
         app.setWindowIcon(QtGui.QIcon())
 

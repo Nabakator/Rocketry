@@ -36,16 +36,16 @@ class ComparisonServiceTests(unittest.TestCase):
                 "Recommended diameter",
                 "Selected catalogue item",
                 "Selected nominal diameter",
-                "Resulting descent velocity",
+                "Resulting descent rate",
                 "Total descent time",
                 "Total estimated drift",
                 "Warnings",
             ],
         )
         family_row = rows[1]
-        self.assertIn("single: hemispherical", family_row.value_a)
-        self.assertIn("drogue: ribbon", family_row.value_b)
-        self.assertIn("main: hemispherical", family_row.value_b)
+        self.assertIn("Single: Hemispherical", family_row.value_a)
+        self.assertIn("Drogue: Ribbon", family_row.value_b)
+        self.assertIn("Main: Hemispherical", family_row.value_b)
 
     def test_comparison_rows_mark_draft_configurations_clearly(self) -> None:
         analyzed = analyze_configuration(make_single_configuration(), catalogue_items())
