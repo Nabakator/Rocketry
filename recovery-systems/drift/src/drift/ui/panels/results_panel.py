@@ -10,6 +10,7 @@ from drift.formatting import format_length, format_time, format_velocity
 from drift.models import CatalogueItem, Configuration, Project
 from drift.services.comparison import build_comparison_rows
 from drift.services.validation import ValidationIssue
+from drift.ui.theme import SPACING, configure_box_layout, configure_form_layout
 
 
 class ResultsPanel(QtWidgets.QWidget):
@@ -24,16 +25,22 @@ class ResultsPanel(QtWidgets.QWidget):
 
     def _build_ui(self) -> None:
         layout = QtWidgets.QVBoxLayout(self)
+        configure_box_layout(layout)
 
         self.status_label = QtWidgets.QLabel("Analyse a configuration to populate results.")
+        self.status_label.setProperty("role", "status")
         self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
 
         summary_box = QtWidgets.QGroupBox("Summary")
         summary_form = QtWidgets.QFormLayout(summary_box)
+        configure_form_layout(summary_form)
         self.basis_value = QtWidgets.QLabel("N/A")
+        self.basis_value.setProperty("role", "mono")
         self.total_time_value = QtWidgets.QLabel("N/A")
+        self.total_time_value.setProperty("role", "metricValue")
         self.total_drift_value = QtWidgets.QLabel("N/A")
+        self.total_drift_value.setProperty("role", "metricValue")
         summary_form.addRow("Basis", self.basis_value)
         summary_form.addRow("Total descent time", self.total_time_value)
         summary_form.addRow("Total drift", self.total_drift_value)
@@ -41,6 +48,7 @@ class ResultsPanel(QtWidgets.QWidget):
 
         validation_box = QtWidgets.QGroupBox("Validation Issues")
         validation_layout = QtWidgets.QVBoxLayout(validation_box)
+        configure_box_layout(validation_layout)
         self.validation_table = QtWidgets.QTableWidget(0, 3)
         self.validation_table.setHorizontalHeaderLabels(["Code", "Field", "Message"])
         self.validation_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
@@ -51,6 +59,7 @@ class ResultsPanel(QtWidgets.QWidget):
 
         parachute_box = QtWidgets.QGroupBox("Parachute Outputs")
         parachute_layout = QtWidgets.QVBoxLayout(parachute_box)
+        configure_box_layout(parachute_layout)
         self.parachute_table = QtWidgets.QTableWidget(0, 6)
         self.parachute_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.parachute_table.verticalHeader().setVisible(False)
@@ -60,6 +69,7 @@ class ResultsPanel(QtWidgets.QWidget):
 
         phase_box = QtWidgets.QGroupBox("Phase Summaries")
         phase_layout = QtWidgets.QVBoxLayout(phase_box)
+        configure_box_layout(phase_layout)
         self.phase_table = QtWidgets.QTableWidget(0, 6)
         self.phase_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.phase_table.verticalHeader().setVisible(False)
@@ -69,6 +79,7 @@ class ResultsPanel(QtWidgets.QWidget):
 
         warnings_box = QtWidgets.QGroupBox("Warnings")
         warnings_layout = QtWidgets.QVBoxLayout(warnings_box)
+        configure_box_layout(warnings_layout)
         self.warning_table = QtWidgets.QTableWidget(0, 4)
         self.warning_table.setHorizontalHeaderLabels(["Code", "Severity", "Message", "Source"])
         self.warning_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
@@ -79,7 +90,9 @@ class ResultsPanel(QtWidgets.QWidget):
 
         comparison_box = QtWidgets.QGroupBox("Comparison")
         comparison_layout = QtWidgets.QVBoxLayout(comparison_box)
+        configure_box_layout(comparison_layout)
         compare_selectors = QtWidgets.QHBoxLayout()
+        compare_selectors.setSpacing(SPACING.sm)
         self.compare_a_combo = QtWidgets.QComboBox()
         self.compare_b_combo = QtWidgets.QComboBox()
         compare_selectors.addWidget(QtWidgets.QLabel("Configuration A"))
@@ -90,6 +103,7 @@ class ResultsPanel(QtWidgets.QWidget):
         self.comparison_note = QtWidgets.QLabel(
             "Add at least two saved configurations to compare them."
         )
+        self.comparison_note.setProperty("role", "helper")
         self.comparison_note.setWordWrap(True)
         comparison_layout.addWidget(self.comparison_note)
         self.comparison_table = QtWidgets.QTableWidget(0, 3)

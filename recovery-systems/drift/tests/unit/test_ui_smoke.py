@@ -34,6 +34,10 @@ class MainWindowSmokeTests(unittest.TestCase):
         self.assertIsNotNone(window.current_project())
         self.assertIsNotNone(window.current_configuration())
         self.assertEqual(window.windowTitle(), f"Untitled Project - {APP_WINDOW_NAME}")
+        self.assertEqual(window.input_panel.objectName(), "leftPanel")
+        self.assertEqual(window.results_panel.objectName(), "centrePanel")
+        self.assertEqual(window.visuals_panel.objectName(), "rightPanel")
+        self.assertIn("QWidget#leftPanel", self.app.styleSheet())
 
     def test_main_window_can_analyze_and_save_project(self) -> None:
         window = MainWindow()

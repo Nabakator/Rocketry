@@ -10,6 +10,7 @@ from drift.formatting import format_length, format_time
 from drift.models import Configuration
 from drift.services.validation import ValidationIssue
 from drift.services.visualization import build_recovery_visual_model
+from drift.ui.theme import configure_box_layout
 
 from .schematic_widget import RecoverySchematicWidget
 
@@ -23,15 +24,18 @@ class VisualsPanel(QtWidgets.QWidget):
 
     def _build_ui(self) -> None:
         layout = QtWidgets.QVBoxLayout(self)
+        configure_box_layout(layout)
 
         schematic_box = QtWidgets.QGroupBox("Recovery Schematic")
         schematic_layout = QtWidgets.QVBoxLayout(schematic_box)
+        configure_box_layout(schematic_layout)
         self.schematic_widget = RecoverySchematicWidget()
         schematic_layout.addWidget(self.schematic_widget)
         layout.addWidget(schematic_box)
 
         timeline_box = QtWidgets.QGroupBox("Event Timeline")
         timeline_layout = QtWidgets.QVBoxLayout(timeline_box)
+        configure_box_layout(timeline_layout)
         self.timeline_table = QtWidgets.QTableWidget(0, 4)
         self.timeline_table.setHorizontalHeaderLabels(["Time", "Event", "Altitude", "Notes"])
         self.timeline_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)

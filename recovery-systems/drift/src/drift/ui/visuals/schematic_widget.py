@@ -6,13 +6,14 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from drift.formatting import format_length
 from drift.services.visualization import RecoveryVisualModel
+from drift.ui.theme import Colours, mono_font, qcolor, ui_font
 
 SEGMENT_COLORS = {
-    "ascent": QtGui.QColor("#6b7280"),
-    "transition": QtGui.QColor("#9ca3af"),
-    "single": QtGui.QColor("#1d4ed8"),
-    "drogue": QtGui.QColor("#c2410c"),
-    "main": QtGui.QColor("#047857"),
+    "ascent": qcolor(Colours.PHASE_ASCENT),
+    "transition": qcolor(Colours.PHASE_FREEFALL),
+    "single": qcolor(Colours.PHASE_MAIN),
+    "drogue": qcolor(Colours.PHASE_DROGUE),
+    "main": qcolor(Colours.PHASE_MAIN),
 }
 
 
@@ -41,10 +42,11 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
         del event
         painter = QtGui.QPainter(self)
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
-        painter.fillRect(self.rect(), self.palette().base())
+        painter.fillRect(self.rect(), qcolor(Colours.SURFACE_1))
 
         if self._model is None:
-            painter.setPen(self.palette().color(QtGui.QPalette.WindowText))
+            painter.setFont(ui_font(point_size=11))
+            painter.setPen(qcolor(Colours.MUTED_FOREGROUND))
             painter.drawText(
                 self.rect().adjusted(20, 20, -20, -20),
                 QtCore.Qt.AlignCenter | QtCore.Qt.TextWordWrap,
@@ -54,7 +56,8 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
 
         rect = self.rect().adjusted(24, 24, -24, -24)
         header_rect = QtCore.QRect(rect.left(), rect.top(), rect.width(), 24)
-        painter.setPen(self.palette().color(QtGui.QPalette.WindowText))
+        painter.setFont(ui_font(point_size=10, weight=QtGui.QFont.DemiBold))
+        painter.setPen(qcolor(Colours.MUTED_FOREGROUND))
         painter.drawText(
             header_rect,
             QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter,
@@ -64,7 +67,7 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
         body_top = header_rect.bottom() + 12
         body_bottom = rect.bottom() - 12
 
-        painter.setPen(QtGui.QPen(QtGui.QColor("#111827"), 2))
+        painter.setPen(QtGui.QPen(qcolor(Colours.PANEL_BORDER), 2))
         painter.drawLine(rect.left() + 16, body_bottom, rect.right() - 16, body_bottom)
 
         max_altitude_m = max(self._model.max_altitude_m, 1.0)
@@ -105,11 +108,11 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
         for marker, (label_rect, alignment) in zip(self._model.markers, label_positions, strict=True):
             x = x_fraction_to_x(marker.x_fraction)
             y = altitude_to_y(marker.altitude_m)
-            color = QtGui.QColor("#111827")
+            color = qcolor(Colours.MUTED_FOREGROUND)
             if marker.kind == "apogee":
-                color = QtGui.QColor("#7c3aed")
+                color = qcolor(Colours.PHASE_FREEFALL)
             elif marker.kind == "deployment":
-                color = QtGui.QColor("#b91c1c")
+                color = qcolor(Colours.PRIMARY)
             painter.setPen(QtGui.QPen(color, 2))
             painter.setBrush(color)
             painter.drawEllipse(QtCore.QPoint(x, y), 4, 4)
@@ -118,6 +121,7 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
             elif label_rect.center().x() > x:
                 leader_y = label_rect.center().y()
                 painter.drawLine(x + 6, y, label_rect.left() - 4, leader_y)
+            painter.setFont(mono_font(point_size=9))
             painter.drawText(
                 label_rect,
                 alignment,
@@ -140,6 +144,7 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
     ) -> None:
         mid_x = int((x_start + x_end) / 2)
         mid_y = int((y_start + y_end) / 2)
+        painter.setFont(mono_font(point_size=9))
         painter.setPen(color)
 
         if kind == "ascent":

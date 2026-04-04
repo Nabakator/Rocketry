@@ -27,6 +27,7 @@ from drift.ui.display_units import (
     velocity_to_si,
     velocity_unit_label,
 )
+from drift.ui.theme import SPACING, configure_box_layout, configure_form_layout, configure_grid_layout
 
 RECOVERY_MODE_ITEMS = [("single", "Single Deployment"), ("dual", "Dual Deployment")]
 UNIT_SYSTEM_ITEMS = [("si", "SI"), ("imperial", "Imperial")]
@@ -70,9 +71,10 @@ class InputPanel(QtWidgets.QWidget):
 
     def _build_ui(self) -> None:
         layout = QtWidgets.QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        configure_box_layout(layout)
 
         button_row = QtWidgets.QHBoxLayout()
+        button_row.setSpacing(SPACING.sm)
         self.new_project_button = QtWidgets.QPushButton("New")
         self.open_project_button = QtWidgets.QPushButton("Open")
         self.save_project_button = QtWidgets.QPushButton("Save")
@@ -83,21 +85,24 @@ class InputPanel(QtWidgets.QWidget):
 
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidgetResizable(True)
+        scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
         layout.addWidget(scroll_area)
 
         content = QtWidgets.QWidget()
         scroll_area.setWidget(content)
         content_layout = QtWidgets.QVBoxLayout(content)
-        content_layout.setContentsMargins(0, 0, 0, 0)
+        configure_box_layout(content_layout, margins=(0, 0, 0, 0))
 
         project_box = QtWidgets.QGroupBox("Project")
         project_form = QtWidgets.QFormLayout(project_box)
+        configure_form_layout(project_form)
         self.project_name_edit = QtWidgets.QLineEdit()
         project_form.addRow("Project name", self.project_name_edit)
         content_layout.addWidget(project_box)
 
         configuration_box = QtWidgets.QGroupBox("Configuration")
         configuration_layout = QtWidgets.QGridLayout(configuration_box)
+        configure_grid_layout(configuration_layout)
         self.configuration_combo = QtWidgets.QComboBox()
         self.new_configuration_button = QtWidgets.QPushButton("Add")
         self.configuration_name_edit = QtWidgets.QLineEdit()
@@ -120,6 +125,7 @@ class InputPanel(QtWidgets.QWidget):
 
         general_box = QtWidgets.QGroupBox("General Inputs")
         general_form = QtWidgets.QFormLayout(general_box)
+        configure_form_layout(general_form)
         self.mass_spin = self._double_spin(0.001, 100000.0, 3, 0.5)
         self.safety_margin_spin = self._double_spin(0.0, 10.0, 3, 0.05)
         general_form.addRow("Rocket mass", self.mass_spin)
@@ -128,6 +134,7 @@ class InputPanel(QtWidgets.QWidget):
 
         atmosphere_box = QtWidgets.QGroupBox("Atmosphere")
         atmosphere_form = QtWidgets.QFormLayout(atmosphere_box)
+        configure_form_layout(atmosphere_form)
         self.atmosphere_mode_combo = QtWidgets.QComboBox()
         for value, label in ATMOSPHERE_MODE_ITEMS:
             self.atmosphere_mode_combo.addItem(label, value)
@@ -138,6 +145,7 @@ class InputPanel(QtWidgets.QWidget):
 
         wind_box = QtWidgets.QGroupBox("Wind")
         wind_form = QtWidgets.QFormLayout(wind_box)
+        configure_form_layout(wind_form)
         self.wind_mode_combo = QtWidgets.QComboBox()
         for value, label in WIND_MODE_ITEMS:
             self.wind_mode_combo.addItem(label, value)
@@ -152,11 +160,13 @@ class InputPanel(QtWidgets.QWidget):
 
         altitude_box = QtWidgets.QGroupBox("Altitudes")
         altitude_layout = QtWidgets.QVBoxLayout(altitude_box)
+        configure_box_layout(altitude_layout)
         self.altitude_stack = QtWidgets.QStackedWidget()
         altitude_layout.addWidget(self.altitude_stack)
 
         single_altitudes = QtWidgets.QWidget()
         single_form = QtWidgets.QFormLayout(single_altitudes)
+        configure_form_layout(single_form)
         self.single_deployment_altitude_spin = self._double_spin(0.0, 100000.0, 2, 10.0)
         self.single_apogee_checkbox = QtWidgets.QCheckBox("Apogee known")
         self.single_apogee_spin = self._double_spin(0.0, 100000.0, 2, 10.0)
@@ -166,6 +176,7 @@ class InputPanel(QtWidgets.QWidget):
 
         dual_altitudes = QtWidgets.QWidget()
         dual_form = QtWidgets.QFormLayout(dual_altitudes)
+        configure_form_layout(dual_form)
         self.dual_apogee_checkbox = QtWidgets.QCheckBox("Apogee known")
         self.dual_apogee_spin = self._double_spin(0.0, 100000.0, 2, 10.0)
         self.dual_drogue_altitude_spin = self._double_spin(0.0, 100000.0, 2, 10.0)
@@ -178,12 +189,13 @@ class InputPanel(QtWidgets.QWidget):
 
         parachute_box = QtWidgets.QGroupBox("Parachutes")
         parachute_layout = QtWidgets.QVBoxLayout(parachute_box)
+        configure_box_layout(parachute_layout)
         self.parachute_stack = QtWidgets.QStackedWidget()
         parachute_layout.addWidget(self.parachute_stack)
         self.single_parachute_group = self._build_parachute_group("Single parachute")
         self.dual_parachute_page = QtWidgets.QWidget()
         dual_page_layout = QtWidgets.QVBoxLayout(self.dual_parachute_page)
-        dual_page_layout.setContentsMargins(0, 0, 0, 0)
+        configure_box_layout(dual_page_layout, margins=(0, 0, 0, 0))
         self.drogue_parachute_group = self._build_parachute_group("Drogue parachute")
         self.main_parachute_group = self._build_parachute_group("Main parachute")
         dual_page_layout.addWidget(self.drogue_parachute_group["box"])
@@ -196,10 +208,12 @@ class InputPanel(QtWidgets.QWidget):
         self.note_label = QtWidgets.QLabel(
             "Inputs are edited through the service-backed shell. Values are stored in canonical SI."
         )
+        self.note_label.setProperty("role", "helper")
         self.note_label.setWordWrap(True)
         content_layout.addWidget(self.note_label)
 
         self.analyze_button = QtWidgets.QPushButton("Analyse")
+        self.analyze_button.setObjectName("analyseButton")
         self.analyze_button.setDefault(True)
         content_layout.addWidget(self.analyze_button)
         content_layout.addStretch(1)
@@ -271,11 +285,13 @@ class InputPanel(QtWidgets.QWidget):
         spin.setRange(minimum, maximum)
         spin.setDecimals(decimals)
         spin.setSingleStep(step)
+        spin.setAlignment(QtCore.Qt.AlignRight)
         return spin
 
     def _build_parachute_group(self, title: str) -> dict[str, object]:
         box = QtWidgets.QGroupBox(title)
         form = QtWidgets.QFormLayout(box)
+        configure_form_layout(form)
         family_combo = QtWidgets.QComboBox()
         for value, label in PARACHUTE_FAMILY_ITEMS:
             family_combo.addItem(label, value)

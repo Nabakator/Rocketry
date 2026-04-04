@@ -20,6 +20,7 @@ from drift.services import AnalysisError, analyze_configuration, validate_config
 from drift.services.export import save_configuration_markdown
 from drift.services.persistence import load_catalogue, load_project, save_project
 from drift.ui.panels import InputPanel, ResultsPanel
+from drift.ui.theme import apply_theme
 from drift.ui.visuals import VisualsPanel
 
 
@@ -33,6 +34,7 @@ class MainWindow(QtWidgets.QMainWindow):
         parent: QtWidgets.QWidget | None = None,
     ) -> None:
         super().__init__(parent)
+        apply_theme(QtWidgets.QApplication.instance())
         self._catalogue_path = (
             Path(catalogue_path)
             if catalogue_path is not None
@@ -43,6 +45,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._project_path: Path | None = None
         self._dirty = False
 
+        self.setObjectName("mainWindow")
         self.setWindowTitle(APP_FULL_NAME)
         self.resize(1680, 940)
 
@@ -259,20 +262,32 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _build_ui(self) -> None:
         self.input_panel = InputPanel(self)
+        self.input_panel.setObjectName("leftPanel")
+        self.input_panel.setMinimumWidth(300)
         self.results_panel = ResultsPanel(self)
+        self.results_panel.setObjectName("centrePanel")
+        self.results_panel.setMinimumWidth(400)
         self.visuals_panel = VisualsPanel(self)
+        self.visuals_panel.setObjectName("rightPanel")
+        self.visuals_panel.setMinimumWidth(260)
 
         self.main_splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        self.main_splitter.setObjectName("mainSplitter")
+        self.main_splitter.setChildrenCollapsible(False)
+        self.main_splitter.setHandleWidth(1)
         self.main_splitter.addWidget(self.input_panel)
         self.main_splitter.addWidget(self.results_panel)
         self.main_splitter.addWidget(self.visuals_panel)
-        self.main_splitter.setStretchFactor(0, 2)
-        self.main_splitter.setStretchFactor(1, 3)
-        self.main_splitter.setStretchFactor(2, 2)
-        self.main_splitter.setSizes([440, 700, 440])
+        self.main_splitter.setStretchFactor(0, 0)
+        self.main_splitter.setStretchFactor(1, 1)
+        self.main_splitter.setStretchFactor(2, 0)
+        self.main_splitter.setSizes([320, 840, 280])
         self.setCentralWidget(self.main_splitter)
 
-        file_menu = self.menuBar().addMenu("&File")
+        menu_bar = self.menuBar()
+        menu_bar.setObjectName("topBar")
+        menu_bar.setNativeMenuBar(False)
+        file_menu = menu_bar.addMenu("&File")
         new_action = file_menu.addAction("New Project")
         open_action = file_menu.addAction("Open Project...")
         save_action = file_menu.addAction("Save Project")
@@ -280,7 +295,7 @@ class MainWindow(QtWidgets.QMainWindow):
         file_menu.addSeparator()
         close_action = file_menu.addAction("Close Window")
 
-        run_menu = self.menuBar().addMenu("&Run")
+        run_menu = menu_bar.addMenu("&Run")
         analyze_action = run_menu.addAction("Analyse")
 
         new_action.triggered.connect(self.new_project)
@@ -290,6 +305,7 @@ class MainWindow(QtWidgets.QMainWindow):
         close_action.triggered.connect(self.close)
         analyze_action.triggered.connect(self.analyze_current_configuration)
 
+        self.statusBar().setObjectName("statusBar")
         self.statusBar().showMessage("DRIFT desktop shell ready.")
 
     def _connect_signals(self) -> None:
@@ -481,6 +497,7 @@ def main() -> int:
     owns_application = app is None
     if app is None:
         app = QtWidgets.QApplication([])
+        apply_theme(app)
         app.setApplicationDisplayName(APP_FULL_NAME)
         app.setWindowIcon(QtGui.QIcon())
 
