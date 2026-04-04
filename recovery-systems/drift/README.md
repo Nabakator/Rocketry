@@ -23,9 +23,9 @@ The current implementation supports:
 - constant-wind and two-layer wind models
 - first-order descent-time and drift estimation
 - deterministic validation before analysis
-- deterministic engineering warnings based on analyzed results
+- deterministic engineering warnings based on analysed results
 - side-by-side comparison of two saved configurations within a project
-- recovery schematic and event timeline views driven by analyzed model state
+- recovery schematic and event timeline views driven by analysed model state
 - Markdown export of configuration assumptions and analysis results
 
 ## Non-goals and current limits
@@ -84,7 +84,7 @@ Core files and folders:
   - active application package
   - `core/`: SI-only engineering calculations
   - `models/`: persistence-facing domain models
-  - `services/`: validation, analysis, comparison, export, and visualization orchestration
+  - `services/`: validation, analysis, comparison, export, and visualisation orchestration
   - `ui/`: PySide6 desktop shell and panels
 - `data/`
   - local curated parachute catalogue used by DRIFT

@@ -55,5 +55,5 @@ class ComparisonServiceTests(unittest.TestCase):
         total_time_row = next(row for row in rows if row.metric == "Total descent time")
         warnings_row = next(row for row in rows if row.metric == "Warnings")
 
-        self.assertEqual(total_time_row.value_b, "Draft / not analyzed")
+        self.assertEqual(total_time_row.value_b, "Draft / not analysed")
         self.assertEqual(warnings_row.value_b, "None")

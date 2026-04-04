@@ -15,7 +15,7 @@ def generate_configuration_warnings(
     configuration: Configuration,
     catalogue_items: Sequence[CatalogueItem],
 ) -> list[Warning]:
-    """Return deterministic engineering warnings for an analyzed configuration."""
+    """Return deterministic engineering warnings for an analysed configuration."""
 
     if configuration.analysis_results is None:
         return []

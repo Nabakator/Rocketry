@@ -15,7 +15,7 @@ from .schematic_widget import RecoverySchematicWidget
 
 
 class VisualsPanel(QtWidgets.QWidget):
-    """Recovery schematic and timeline widgets wired to analyzed model state."""
+    """Recovery schematic and timeline widgets wired to analysed model state."""
 
     def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
         super().__init__(parent)
@@ -53,7 +53,7 @@ class VisualsPanel(QtWidgets.QWidget):
         issues = list(validation_issues or [])
         if configuration is None:
             self.schematic_widget.show_message("Select or create a configuration to begin.")
-            self._set_timeline_message("Analyze a configuration to populate this area.")
+            self._set_timeline_message("Analyse a configuration to populate this area.")
             return
 
         unit_system = configuration.display_unit_system
