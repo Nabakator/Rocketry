@@ -281,7 +281,7 @@ class MainWindow(QtWidgets.QMainWindow):
         close_action = file_menu.addAction("Close Window")
 
         run_menu = self.menuBar().addMenu("&Run")
-        analyze_action = run_menu.addAction("Validate and Analyze")
+        analyze_action = run_menu.addAction("Validate and analyse")
 
         new_action.triggered.connect(self.new_project)
         open_action.triggered.connect(self.open_project)

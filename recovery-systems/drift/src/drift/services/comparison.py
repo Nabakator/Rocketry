@@ -133,7 +133,7 @@ def _format_parachutes(
     require_analysis: bool = False,
 ) -> str:
     if require_analysis and configuration.analysis_results is None:
-        return "Draft / not analyzed"
+        return "Draft / not analysed"
 
     parachutes = sorted(
         configuration.parachutes,
@@ -161,13 +161,13 @@ def _catalogue_name(
 
 def _format_total_time(configuration: Configuration) -> str:
     if configuration.analysis_results is None:
-        return "Draft / not analyzed"
+        return "Draft / not analysed"
     return format_time(configuration.analysis_results.total_descent_time_s)
 
 
 def _format_total_drift(configuration: Configuration, unit_system: str) -> str:
     if configuration.analysis_results is None:
-        return "Draft / not analyzed"
+        return "Draft / not analysed"
     return format_length(configuration.analysis_results.total_estimated_drift_m, unit_system)
 
 

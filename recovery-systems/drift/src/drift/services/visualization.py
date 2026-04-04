@@ -48,10 +48,10 @@ class RecoveryVisualModel:
 
 
 def build_recovery_visual_model(configuration: Configuration) -> RecoveryVisualModel:
-    """Build a schematic/timeline model from one analyzed configuration."""
+    """Build a schematic/timeline model from one analysed configuration."""
 
     if configuration.analysis_results is None:
-        raise ValueError("Recovery visuals require analyzed configuration results.")
+        raise ValueError("Recovery visuals require analysed configuration results.")
 
     markers: list[SchematicMarker] = [SchematicMarker(0.0, "Ground", "ground")]
     segments: list[SchematicSegment] = []

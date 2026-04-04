@@ -42,7 +42,7 @@ def analyze_project(
     project: Project,
     catalogue_items: Sequence[CatalogueItem],
 ) -> Project:
-    """Analyze every configuration in a project and return a new project instance."""
+    """Analyse every configuration in a project and return a new project instance."""
 
     validation_result = validate_project(project)
     if not validation_result.is_valid:
@@ -62,7 +62,7 @@ def analyze_configuration(
     configuration: Configuration,
     catalogue_items: Sequence[CatalogueItem],
 ) -> Configuration:
-    """Analyze one validated DRIFT configuration and return updated results."""
+    """Analyse one validated DRIFT configuration and return updated results."""
 
     validation_result = validate_configuration(configuration)
     if not validation_result.is_valid:

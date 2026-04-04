@@ -20,7 +20,7 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
 
     def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
         super().__init__(parent)
-        self._message = "Analyze a configuration to render the recovery schematic."
+        self._message = "Analyse a configuration to render the recovery schematic."
         self._model: RecoveryVisualModel | None = None
         self._unit_system = "si"
         self.setMinimumHeight(320)

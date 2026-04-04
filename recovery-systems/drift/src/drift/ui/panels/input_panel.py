@@ -199,7 +199,7 @@ class InputPanel(QtWidgets.QWidget):
         self.note_label.setWordWrap(True)
         content_layout.addWidget(self.note_label)
 
-        self.analyze_button = QtWidgets.QPushButton("Validate and Analyze")
+        self.analyze_button = QtWidgets.QPushButton("Validate and analyse")
         self.analyze_button.setDefault(True)
         content_layout.addWidget(self.analyze_button)
         content_layout.addStretch(1)

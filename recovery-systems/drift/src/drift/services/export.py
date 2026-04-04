@@ -38,7 +38,7 @@ def render_configuration_markdown(
         f"- Display units: {configuration.display_unit_system}",
         f"- Rocket mass: {format_mass(configuration.rocket_mass_kg, unit_system)}",
         f"- Safety margin: {configuration.safety_margin_fraction:.3f}",
-        f"- Analysis status: {'analyzed' if analysis is not None else 'draft / not analyzed'}",
+        f"- Analysis status: {'analysed' if analysis is not None else 'draft / not analysed'}",
         "",
         "## Assumptions",
         f"- Basis label: {analysis.recovery_basis_label if analysis is not None else 'N/A'}",
@@ -95,7 +95,7 @@ def render_configuration_markdown(
         ]
     )
     if analysis is None:
-        lines.append("- Not analyzed.")
+        lines.append("- Not analysed.")
     else:
         lines.extend(
             [

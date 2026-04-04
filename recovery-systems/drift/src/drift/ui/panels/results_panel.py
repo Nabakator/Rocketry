@@ -25,7 +25,7 @@ class ResultsPanel(QtWidgets.QWidget):
     def _build_ui(self) -> None:
         layout = QtWidgets.QVBoxLayout(self)
 
-        self.status_label = QtWidgets.QLabel("Analyze a configuration to populate results.")
+        self.status_label = QtWidgets.QLabel("Analyse a configuration to populate results.")
         self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
 
