@@ -9,6 +9,7 @@ from drift.services.visualization import RecoveryVisualModel
 
 SEGMENT_COLORS = {
     "ascent": QtGui.QColor("#6b7280"),
+    "transition": QtGui.QColor("#9ca3af"),
     "single": QtGui.QColor("#1d4ed8"),
     "drogue": QtGui.QColor("#c2410c"),
     "main": QtGui.QColor("#047857"),
@@ -62,15 +63,9 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
 
         body_top = header_rect.bottom() + 12
         body_bottom = rect.bottom() - 12
-        axis_x = rect.left() + 120
-        label_x = axis_x + 28
 
         painter.setPen(QtGui.QPen(QtGui.QColor("#111827"), 2))
-        painter.drawLine(axis_x, body_top, axis_x, body_bottom)
-
-        ground_y = body_bottom
-        painter.setPen(QtGui.QPen(QtGui.QColor("#111827"), 2))
-        painter.drawLine(axis_x - 36, ground_y, rect.right() - 16, ground_y)
+        painter.drawLine(rect.left() + 16, body_bottom, rect.right() - 16, body_bottom)
 
         max_altitude_m = max(self._model.max_altitude_m, 1.0)
 
@@ -78,24 +73,37 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
             ratio = altitude_m / max_altitude_m
             return int(body_bottom - ratio * (body_bottom - body_top))
 
+        def x_fraction_to_x(x_fraction: float) -> int:
+            return int(rect.left() + x_fraction * rect.width())
+
         for segment in self._model.segments:
+            x_start = x_fraction_to_x(segment.start_x_fraction)
+            x_end = x_fraction_to_x(segment.end_x_fraction)
             y_start = altitude_to_y(segment.start_altitude_m)
             y_end = altitude_to_y(segment.end_altitude_m)
             color = SEGMENT_COLORS.get(segment.kind, QtGui.QColor("#1f2937"))
             pen = QtGui.QPen(color, 4)
-            if segment.kind == "ascent":
+            if segment.kind in {"ascent", "transition"}:
                 pen.setStyle(QtCore.Qt.DashLine)
             painter.setPen(pen)
-            x = axis_x - 28 if segment.kind == "ascent" else axis_x
-            painter.drawLine(x, y_start, x, y_end)
-            painter.setPen(color)
-            painter.drawText(
-                QtCore.QRect(label_x, min(y_start, y_end) - 10, rect.width() - label_x, 20),
-                QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter,
-                segment.label,
-            )
+            painter.drawLine(x_start, y_start, x_end, y_end)
 
-        for marker in self._model.markers:
+            if segment.show_label:
+                self._draw_segment_label(
+                    painter,
+                    rect,
+                    x_start,
+                    y_start,
+                    x_end,
+                    y_end,
+                    segment.label,
+                    segment.kind,
+                    color,
+                )
+
+        label_positions = self._layout_marker_labels(rect, altitude_to_y)
+        for marker, (label_rect, alignment) in zip(self._model.markers, label_positions, strict=True):
+            x = x_fraction_to_x(marker.x_fraction)
             y = altitude_to_y(marker.altitude_m)
             color = QtGui.QColor("#111827")
             if marker.kind == "apogee":
@@ -104,14 +112,109 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
                 color = QtGui.QColor("#b91c1c")
             painter.setPen(QtGui.QPen(color, 2))
             painter.setBrush(color)
-            painter.drawEllipse(QtCore.QPoint(axis_x, y), 4, 4)
+            painter.drawEllipse(QtCore.QPoint(x, y), 4, 4)
+            if label_rect.center().x() < x:
+                painter.drawLine(label_rect.right() + 4, label_rect.center().y(), x - 6, y)
+            elif label_rect.center().x() > x:
+                leader_y = label_rect.center().y()
+                painter.drawLine(x + 6, y, label_rect.left() - 4, leader_y)
             painter.drawText(
-                QtCore.QRect(label_x, y - 12, rect.width() - label_x, 24),
-                QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter,
+                label_rect,
+                alignment,
                 f"{marker.label} ({format_length(marker.altitude_m, self._unit_system)})",
             )
 
         painter.end()
+
+    def _draw_segment_label(
+        self,
+        painter: QtGui.QPainter,
+        rect: QtCore.QRect,
+        x_start: int,
+        y_start: int,
+        x_end: int,
+        y_end: int,
+        label: str,
+        kind: str,
+        color: QtGui.QColor,
+    ) -> None:
+        mid_x = int((x_start + x_end) / 2)
+        mid_y = int((y_start + y_end) / 2)
+        painter.setPen(color)
+
+        if kind == "ascent":
+            label_rect = QtCore.QRect(
+                max(rect.left() + 8, mid_x - 170),
+                max(rect.top() + 30, mid_y - 24),
+                150,
+                20,
+            )
+            alignment = QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter
+        else:
+            label_rect = QtCore.QRect(
+                min(rect.right() - 180, mid_x + 12),
+                max(rect.top() + 30, mid_y - 10),
+                170,
+                20,
+            )
+            alignment = QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter
+
+        painter.drawText(label_rect, alignment, label)
+
+    def _layout_marker_labels(
+        self,
+        rect: QtCore.QRect,
+        altitude_to_y,
+    ) -> list[tuple[QtCore.QRect, QtCore.Qt.AlignmentFlag]]:
+        label_rects: list[tuple[QtCore.QRect, QtCore.Qt.AlignmentFlag]] = []
+        label_width = min(220, int(rect.width() * 0.34))
+        left_x = rect.left() + 12
+        right_x = rect.left() + int(rect.width() * 0.58)
+        min_top = rect.top() + 34
+        max_bottom = rect.bottom() - 8
+        previous_bottom = {"left": min_top - 6, "right": min_top - 6}
+
+        for marker in self._model.markers:
+            y = altitude_to_y(marker.altitude_m)
+            top = y - 12
+            if marker.kind == "apogee":
+                top -= 10
+            elif marker.kind == "ground":
+                top -= 14
+
+            top = max(top, min_top)
+            side = self._marker_label_side(marker)
+            if top <= previous_bottom[side]:
+                top = previous_bottom[side] + 6
+            if top + 24 > max_bottom:
+                top = max(min_top, max_bottom - 24)
+            previous_bottom[side] = top + 24
+            if side == "left":
+                label_rects.append(
+                    (
+                        QtCore.QRect(left_x, top, label_width, 24),
+                        QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter,
+                    )
+                )
+            else:
+                label_rects.append(
+                    (
+                        QtCore.QRect(right_x, top, rect.right() - right_x - 8, 24),
+                        QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter,
+                    )
+                )
+
+        return label_rects
+
+    @staticmethod
+    def _marker_label_side(marker) -> str:
+        if marker.kind == "ground":
+            return "left"
+        if marker.kind == "apogee":
+            return "right"
+        if marker.x_fraction >= 0.72:
+            return "left"
+        return "right"
 
 
 __all__ = ["RecoverySchematicWidget"]
