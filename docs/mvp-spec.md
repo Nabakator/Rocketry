@@ -2,4 +2,12 @@
 
 Placeholder for the frozen DRIFT MVP technical specification.
 
-The existing prototype under `recovery-systems/parachute-area/` remains reference-only and is not the active implementation path.
+Active implementation path:
+
+- `src/drift/`
+
+Archived prototype path:
+
+- `recovery-systems/parachute-area/`
+
+The prototype remains reference-only and is not the active implementation path.
