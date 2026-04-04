@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "proj_dual_demo",
+  "project_name": "Dual deployment demo",
+  "description": "Reference dual-deployment example for screenshots and manual checks.",
+  "created_at": "2026-04-04T16:00:00Z",
+  "updated_at": "2026-04-04T16:44:45Z",
+  "default_unit_system": "si",
+  "active_configuration_id": "cfg_dual_demo",
+  "configurations": [
+    {
+      "configuration_id": "cfg_dual_demo",
+      "configuration_name": "Configuration 1",
+      "recovery_mode": "dual",
+      "rocket_mass_kg": 12.0,
+      "safety_margin_fraction": 0.1,
+      "display_unit_system": "si",
+      "atmosphere_settings": {
+        "mode": "standard_atmosphere",
+        "manual_density_kg_per_m3": null
+      },
+      "wind_settings": {
+        "mode": "two_layer",
+        "constant_wind_mps": null,
+        "aloft_wind_mps": 2.0,
+        "ground_wind_mps": 1.0
+      },
+      "altitude_inputs": {
+        "deployment_altitude_m": null,
+        "apogee_altitude_m": 3000.0,
+        "drogue_deployment_altitude_m": 2800.0,
+        "main_deployment_altitude_m": 500.0
+      },
+      "parachutes": [
+        {
+          "parachute_id": "cfg_dual_demo_drogue",
+          "role": "drogue",
+          "family": "ribbon",
+          "cd": 0.7,
+          "cd_source": "preset",
+          "target_descent_velocity_mps": 18.0,
+          "theoretical_diameter_m": 1.1932384632973492,
+          "recommended_diameter_m": 1.2514790582832145,
+          "selected_catalogue_item_id": "ribbon_1_6",
+          "selected_nominal_diameter_m": 1.6,
+          "resulting_descent_velocity_mps": 13.423932712095178
+        },
+        {
+          "parachute_id": "cfg_dual_demo_main",
+          "role": "main",
+          "family": "hemispherical",
+          "cd": 1.5,
+          "cd_source": "preset",
+          "target_descent_velocity_mps": 6.0,
+          "theoretical_diameter_m": 2.180412655925721,
+          "recommended_diameter_m": 2.2868360861970762,
+          "selected_catalogue_item_id": "hemispherical_2_4",
+          "selected_nominal_diameter_m": 2.4,
+          "resulting_descent_velocity_mps": 5.4510316398143015
+        }
+      ],
+      "analysis_results": {
+        "recovery_basis_label": "from_apogee",
+        "phase_summaries": [
+          {
+            "phase_name": "drogue",
+            "start_altitude_m": 3000.0,
+            "end_altitude_m": 500.0,
+            "parachute_id": "cfg_dual_demo_drogue",
+            "nominal_descent_velocity_mps": 13.423932712095178,
+            "estimated_duration_s": 186.23454494430385,
+            "estimated_drift_m": 372.4690898886077
+          },
+          {
+            "phase_name": "main",
+            "start_altitude_m": 500.0,
+            "end_altitude_m": 0.0,
+            "parachute_id": "cfg_dual_demo_main",
+            "nominal_descent_velocity_mps": 5.4510316398143015,
+            "estimated_duration_s": 91.72575634087373,
+            "estimated_drift_m": 91.72575634087373
+          }
+        ],
+        "total_descent_time_s": 277.9603012851776,
+        "total_estimated_drift_m": 464.1948462294814,
+        "display_metrics": {
+          "sizing_available": true,
+          "descent_time_available": true,
+          "drift_available": true
+        }
+      },
+      "warnings": []
+    }
+  ]
+}

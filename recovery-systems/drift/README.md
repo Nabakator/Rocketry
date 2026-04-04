@@ -12,6 +12,8 @@ It exists because recovery work is usually treated as a sub-feature of a broader
 
 Within Rocketry, the repository is organized by engineering domain first. DRIFT is the active tool inside the `recovery-systems` domain and is intended to remain self-contained so future recovery tools can live alongside it cleanly.
 
+![DRIFT desktop UI](docs/examples/dual-deployment-demo/dual-deployment-demo.png)
+
 ## Current MVP capabilities
 
 The current implementation supports:
@@ -108,6 +110,7 @@ Core files and folders:
   - unit and acceptance coverage for the engineering core, services, and UI smoke checks
 - `docs/`
   - MVP and schema notes
+  - `examples/`: example project files and reference screenshots
 
 ## Development workflow
 
@@ -139,6 +142,8 @@ The `docs/` folder holds project notes that define the current MVP contract:
   - high-level MVP scope and implementation direction
 - `docs/json-schema.md`
   - project-file and catalogue schema notes
+- `docs/examples/`
+  - example project files and reference screenshots for manual checks, demos, and README assets
 
 ## Repository Context
 
