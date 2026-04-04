@@ -9,7 +9,7 @@ PACKAGE_NAME = "drift"
 try:
     APP_VERSION = version(PACKAGE_NAME)
 except PackageNotFoundError:
-    APP_VERSION = "0.1.0"
+    APP_VERSION = "0+unknown"
 
 APP_WINDOW_NAME = f"{APP_NAME} (v{APP_VERSION})"
 
