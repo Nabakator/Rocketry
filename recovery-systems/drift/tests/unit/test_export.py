@@ -29,9 +29,9 @@ class MarkdownExportTests(unittest.TestCase):
         self.assertIn("## Phase Summaries", markdown)
         self.assertIn("## Totals", markdown)
         self.assertIn("## Warnings", markdown)
-        self.assertIn("Basis label: from_apogee", markdown)
-        self.assertIn("Atmosphere mode: standard_atmosphere", markdown)
-        self.assertIn("single | hemispherical | 1.500 | preset", markdown)
+        self.assertIn("Basis: From apogee", markdown)
+        self.assertIn("Atmosphere mode: Standard atmosphere", markdown)
+        self.assertIn("Single | Hemispherical | 1.500 | Preset", markdown)
 
     def test_markdown_export_is_deterministic_and_saves_md_files(self) -> None:
         configuration = analyze_configuration(make_single_configuration(), catalogue_items())

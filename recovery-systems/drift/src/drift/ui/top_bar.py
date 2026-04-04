@@ -142,13 +142,13 @@ class TopBarWidget(QtWidgets.QWidget):
             fallback_text="L",
         )
         self.export_button = self._make_action_button(
-            tooltip="Export summary",
+            tooltip="Export Markdown summary",
             theme_icon="document-export",
             fallback_icon=None,
             fallback_text="MD",
         )
         self.reset_button = self._make_action_button(
-            tooltip="Reset configuration",
+            tooltip="Reset draft edits",
             theme_icon="view-refresh",
             fallback_icon=QtWidgets.QStyle.SP_BrowserReload,
             fallback_text="R",

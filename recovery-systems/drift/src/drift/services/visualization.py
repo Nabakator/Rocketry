@@ -59,6 +59,10 @@ class RecoveryVisualModel:
     timeline_events: tuple[TimelineEvent, ...]
 
 
+def _humanise(value: str) -> str:
+    return value.replace("_", " ").strip().capitalize()
+
+
 def build_recovery_visual_model(configuration: Configuration) -> RecoveryVisualModel:
     """Build a schematic/timeline model from one analysed configuration."""
 
@@ -128,7 +132,7 @@ def build_recovery_visual_model(configuration: Configuration) -> RecoveryVisualM
                     label="Recovery basis starts at apogee",
                     altitude_m=altitude_inputs.apogee_altitude_m,
                     time_s=0.0,
-                    notes="Basis label: from_apogee",
+                    notes="Basis: From apogee",
                 )
             )
         deployment_altitude_m = altitude_inputs.deployment_altitude_m or phase.start_altitude_m
@@ -146,7 +150,7 @@ def build_recovery_visual_model(configuration: Configuration) -> RecoveryVisualM
                     label="Single deployment input altitude",
                     altitude_m=deployment_altitude_m,
                     time_s=None,
-                    notes="Deployment timing is not modeled separately in the MVP basis.",
+                    notes="Deployment timing is not modelled separately in the MVP basis.",
                 )
             )
         timeline_events.append(
@@ -154,7 +158,7 @@ def build_recovery_visual_model(configuration: Configuration) -> RecoveryVisualM
                 label="Single deployment / descent begins",
                 altitude_m=phase.start_altitude_m,
                 time_s=0.0,
-                notes=f"Basis label: {analysis.recovery_basis_label}",
+                notes=f"Basis: {_humanise(analysis.recovery_basis_label)}",
             )
         )
         segments.append(
@@ -266,7 +270,7 @@ def build_recovery_visual_model(configuration: Configuration) -> RecoveryVisualM
                     label="Recovery basis starts at apogee",
                     altitude_m=altitude_inputs.apogee_altitude_m,
                     time_s=0.0,
-                    notes="Basis label: from_apogee",
+                    notes="Basis: From apogee",
                 )
             )
         markers.append(
@@ -294,7 +298,7 @@ def build_recovery_visual_model(configuration: Configuration) -> RecoveryVisualM
                     label="Drogue deployment input altitude",
                     altitude_m=drogue_deployment_altitude_m,
                     time_s=None,
-                    notes="Deployment timing is not modeled separately in the MVP basis.",
+                    notes="Deployment timing is not modelled separately in the MVP basis.",
                 )
             )
         timeline_events.append(
@@ -302,7 +306,7 @@ def build_recovery_visual_model(configuration: Configuration) -> RecoveryVisualM
                 label="Drogue deployment / drogue descent begins",
                 altitude_m=drogue_phase.start_altitude_m,
                 time_s=0.0,
-                notes=f"Basis label: {analysis.recovery_basis_label}",
+                notes=f"Basis: {_humanise(analysis.recovery_basis_label)}",
             )
         )
         segments.append(

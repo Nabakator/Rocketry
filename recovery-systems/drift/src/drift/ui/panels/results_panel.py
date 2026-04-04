@@ -272,7 +272,7 @@ class ResultsPanel(QtWidgets.QWidget):
         configure_box_layout(content_layout, margins=(SPACING.lg, SPACING.lg, SPACING.lg, SPACING.lg))
         content_layout.setSpacing(SPACING.md)
 
-        self.status_label = QtWidgets.QLabel("Analyse a configuration to populate results.")
+        self.status_label = QtWidgets.QLabel("Analyse the current configuration to populate the results.")
         self.status_label.setObjectName("statusBanner")
         self.status_label.setWordWrap(True)
         content_layout.addWidget(self.status_label)
@@ -282,12 +282,12 @@ class ResultsPanel(QtWidgets.QWidget):
         self.basis_label.setProperty("role", "helper")
         content_layout.addWidget(self.basis_label)
 
-        self.warning_section, warning_body = self._create_section("Issues and warnings")
+        self.warning_section, warning_body = self._create_section("Validation and warnings")
         self.warning_cards_layout = QtWidgets.QVBoxLayout()
         self.warning_cards_layout.setSpacing(SPACING.sm)
         warning_body.addLayout(self.warning_cards_layout)
         self.warning_empty_label = self._create_empty_state_label(
-            "No validation issues or engineering warnings are present."
+            "No validation issues or engineering warnings."
         )
         warning_body.addWidget(self.warning_empty_label)
         content_layout.addWidget(self.warning_section)
@@ -312,7 +312,7 @@ class ResultsPanel(QtWidgets.QWidget):
         self.parachute_cards_row.setSpacing(SPACING.md)
         parachute_body.addLayout(self.parachute_cards_row)
         self.parachute_empty_label = self._create_empty_state_label(
-            "Run analysis to populate parachute sizing outputs."
+            "Analyse the current configuration to populate parachute sizing."
         )
         parachute_body.addWidget(self.parachute_empty_label)
         content_layout.addWidget(self.parachute_section)
@@ -328,7 +328,7 @@ class ResultsPanel(QtWidgets.QWidget):
         self.phase_table.setFocusPolicy(QtCore.Qt.NoFocus)
         phase_body.addWidget(self.phase_table)
         self.phase_empty_label = self._create_empty_state_label(
-            "No analysed phase data are available for the current configuration."
+            "No analysed phase data are available."
         )
         phase_body.addWidget(self.phase_empty_label)
         content_layout.addWidget(self.phase_section)
@@ -363,7 +363,7 @@ class ResultsPanel(QtWidgets.QWidget):
         content_layout.addWidget(selector_section)
 
         self.comparison_note = self._create_empty_state_label(
-            "Create a second configuration to compare."
+            "Create a second configuration to compare results."
         )
         content_layout.addWidget(self.comparison_note)
 
@@ -480,7 +480,7 @@ class ResultsPanel(QtWidgets.QWidget):
 
         if configuration is None:
             self._clear_all()
-            self.status_label.setText("No configuration is selected.")
+            self.status_label.setText("No configuration selected.")
             return
 
         self._unit_system = configuration.display_unit_system
@@ -488,7 +488,7 @@ class ResultsPanel(QtWidgets.QWidget):
 
         if issues:
             self.status_label.setText(
-                "Analysis is blocked by validation issues. Fix the input state or save the draft."
+                "Analysis is blocked by validation issues. Fix the inputs or save the draft."
             )
             self.basis_label.setText("Basis: N/A")
             self._clear_analysis_tables()
@@ -496,7 +496,7 @@ class ResultsPanel(QtWidgets.QWidget):
 
         if dirty:
             self.status_label.setText(
-                "Draft edits are pending. Analyse to refresh engineering results."
+                "Draft edits are pending. Analyse to update the results."
             )
             self.basis_label.setText("Basis: N/A")
             self._clear_analysis_tables()
@@ -504,13 +504,13 @@ class ResultsPanel(QtWidgets.QWidget):
 
         if configuration.analysis_results is None:
             self.status_label.setText(
-                "No analysed results are available for the current configuration."
+                "This configuration has not been analysed."
             )
             self.basis_label.setText("Basis: N/A")
             self._clear_analysis_tables()
             return
 
-        self.status_label.setText("Analysis results reflect the current configuration state.")
+        self.status_label.setText("Results reflect the current configuration state.")
         self.basis_label.setText(
             f"Basis: {_humanise_identifier(configuration.analysis_results.recovery_basis_label)}"
         )
@@ -530,7 +530,7 @@ class ResultsPanel(QtWidgets.QWidget):
             card = IssueCard()
             card.set_issue(
                 severity="error",
-                title="Invalid input",
+                title="Validation issue",
                 message=issue.message,
                 meta=f"{issue.code} • {issue.field_path}",
             )

@@ -11,6 +11,10 @@ from drift.models import CatalogueItem, Configuration, ParachuteSpec
 ROLE_ORDER = {"single": 0, "drogue": 1, "main": 2}
 
 
+def _humanise(value: str) -> str:
+    return value.replace("_", " ").strip().capitalize()
+
+
 @dataclass(slots=True, frozen=True)
 class ComparisonRow:
     """One deterministic side-by-side comparison row."""
@@ -31,11 +35,15 @@ def build_comparison_rows(
 
     catalogue_by_id = {item.item_id: item for item in catalogue_items}
     return [
-        ComparisonRow("Recovery mode", configuration_a.recovery_mode, configuration_b.recovery_mode),
+        ComparisonRow(
+            "Recovery mode",
+            _humanise(configuration_a.recovery_mode),
+            _humanise(configuration_b.recovery_mode),
+        ),
         ComparisonRow(
             "Parachute family",
-            _format_parachutes(configuration_a, lambda parachute: parachute.family),
-            _format_parachutes(configuration_b, lambda parachute: parachute.family),
+            _format_parachutes(configuration_a, lambda parachute: _humanise(parachute.family)),
+            _format_parachutes(configuration_b, lambda parachute: _humanise(parachute.family)),
         ),
         ComparisonRow(
             "Theoretical diameter",
@@ -90,7 +98,7 @@ def build_comparison_rows(
             ),
         ),
         ComparisonRow(
-            "Resulting descent velocity",
+            "Resulting descent rate",
             _format_parachutes(
                 configuration_a,
                 lambda parachute: format_velocity(
@@ -142,7 +150,7 @@ def _format_parachutes(
     if not parachutes:
         return "N/A"
     return "; ".join(
-        f"{parachute.role}: {formatter(parachute)}"
+        f"{_humanise(parachute.role)}: {formatter(parachute)}"
         for parachute in parachutes
     )
 

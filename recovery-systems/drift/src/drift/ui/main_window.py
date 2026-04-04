@@ -100,14 +100,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self._project_path = None
         self._dirty = False
         self._reload_ui_from_model()
-        self.statusBar().showMessage("New DRIFT project created.", 3000)
+        self.statusBar().showMessage("New project ready.", 3000)
 
     def open_project(self) -> None:
         """Open a project using a native file dialog."""
 
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
-            "Open DRIFT Project",
+            "Load DRIFT project",
             str(self._project_path.parent if self._project_path is not None else Path.cwd()),
             "DRIFT Project (*.json)",
         )
@@ -125,7 +125,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._dirty = False
         self._reload_ui_from_model()
         self.statusBar().showMessage(
-            f"Loaded project from {self._project_path.name}.",
+            f"Project loaded: {self._project_path.name}.",
             3000,
         )
 
@@ -138,7 +138,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self._project_path is None:
             file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
                 self,
-                "Save DRIFT Project",
+                "Save DRIFT project",
                 str(Path.cwd() / "drift-project.json"),
                 "DRIFT Project (*.json)",
             )
@@ -161,7 +161,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._project_path = saved_path
         self._dirty = False
         self._reload_ui_from_model()
-        self.statusBar().showMessage(f"Saved project to {saved_path.name}.", 3000)
+        self.statusBar().showMessage(f"Project saved: {saved_path.name}.", 3000)
         return saved_path
 
     def create_configuration(self) -> None:
@@ -205,7 +205,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,
-            "Export DRIFT Markdown Summary",
+            "Export Markdown summary",
             str(Path.cwd() / default_name),
             "Markdown (*.md)",
         )
@@ -219,7 +219,7 @@ class MainWindow(QtWidgets.QMainWindow):
             path=file_path,
         )
         self.statusBar().showMessage(
-            f"Exported Markdown summary to {saved_path.name}.",
+            f"Markdown summary exported: {saved_path.name}.",
             3000,
         )
 
@@ -251,7 +251,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self._sync_project_metadata_from_panel(touch_updated_at=True)
             self._dirty = False
             self._reload_ui_from_model()
-            QtWidgets.QMessageBox.critical(self, "DRIFT Analysis Error", str(error))
+            QtWidgets.QMessageBox.critical(self, "DRIFT analysis error", str(error))
             self.statusBar().showMessage(str(error), 5000)
             return
 
@@ -259,7 +259,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._sync_project_metadata_from_panel(touch_updated_at=True)
         self._dirty = False
         self._reload_ui_from_model()
-        self.statusBar().showMessage("Analysis completed.", 3000)
+        self.statusBar().showMessage("Analysis complete.", 3000)
 
     def _build_ui(self) -> None:
         self.top_bar = TopBarWidget(self)
@@ -293,7 +293,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(shell)
 
         self.statusBar().setObjectName("statusBar")
-        self.statusBar().showMessage("DRIFT desktop shell ready.")
+        self.statusBar().showMessage("Ready.")
 
     def _connect_signals(self) -> None:
         self.top_bar.new_project_requested.connect(self.new_project)
@@ -355,7 +355,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self._dirty = False
         self._reload_ui_from_model()
-        self.statusBar().showMessage("Draft edits discarded.", 3000)
+        self.statusBar().showMessage("Draft edits reset.", 3000)
 
     def _update_window_title(self) -> None:
         if self._project is None:
@@ -490,12 +490,12 @@ class MainWindow(QtWidgets.QMainWindow):
     @staticmethod
     def _panel_state_message(state_key: str) -> str:
         messages = {
-            "draft": "Draft edits are pending. Analyse to refresh the current configuration.",
-            "valid": "Inputs are valid. Analyse to generate engineering results.",
-            "analysed": "Current configuration is analysed and up to date.",
-            "invalid": "Current inputs are invalid. Fix the validation issues before analysis.",
+            "draft": "Draft edits are pending. Analyse to update the results.",
+            "valid": "Inputs are valid. Analyse to generate results.",
+            "analysed": "Results are current.",
+            "invalid": "Inputs are invalid. Resolve the validation issues.",
         }
-        return messages.get(state_key, "Inputs are valid. Analyse to generate engineering results.")
+        return messages.get(state_key, "Inputs are valid. Analyse to generate results.")
 
     def _make_default_configuration(
         self,

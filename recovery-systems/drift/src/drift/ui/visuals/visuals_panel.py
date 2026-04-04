@@ -141,10 +141,10 @@ class VisualsPanel(QtWidgets.QWidget):
 
         timeline_section, timeline_body = self._create_section(
             "Event timeline",
-            "Event order is driven by analysed phases and deployment markers.",
+            "Event order follows the analysed phases and deployment markers.",
         )
         self.timeline_empty_label = QtWidgets.QLabel(
-            "Run analysis to populate the recovery event sequence."
+            "Analyse the current configuration to populate the event sequence."
         )
         self.timeline_empty_label.setObjectName("emptyStateLabel")
         self.timeline_empty_label.setWordWrap(True)
@@ -169,7 +169,7 @@ class VisualsPanel(QtWidgets.QWidget):
 
         assumptions_section, assumptions_body = self._create_section(
             "Assumptions",
-            "Current model assumptions used by the recovery workflow.",
+            "Current assumptions used by the recovery model.",
         )
         assumptions_list = QtWidgets.QWidget()
         assumptions_list.setObjectName("assumptionsList")
@@ -235,13 +235,13 @@ class VisualsPanel(QtWidgets.QWidget):
             self.schematic_widget.show_message(
                 "Select or create a configuration to populate the recovery view."
             )
-            self._set_timeline_empty("Analyse a configuration to populate the event sequence.")
+            self._set_timeline_empty("Analyse the current configuration to populate the event sequence.")
             return
 
         unit_system = configuration.display_unit_system
         if issues:
             self.schematic_widget.show_message(
-                "Analysis is blocked by validation issues. Fix the input state before generating visuals."
+                "Analysis is blocked by validation issues. Fix the inputs before generating visuals."
             )
             self._set_timeline_empty(
                 f"{len(issues)} validation issue(s) currently block the event sequence."
@@ -250,7 +250,7 @@ class VisualsPanel(QtWidgets.QWidget):
 
         if dirty:
             self.schematic_widget.show_message(
-                "Draft edits are pending. Re-analyse to refresh the recovery sketch."
+                "Draft edits are pending. Re-analyse to update the recovery view."
             )
             self._set_timeline_empty("Draft edits are pending.")
             return
@@ -259,7 +259,7 @@ class VisualsPanel(QtWidgets.QWidget):
             self.schematic_widget.show_message(
                 "This configuration has not been analysed."
             )
-            self._set_timeline_empty("Run analysis to populate the event sequence.")
+            self._set_timeline_empty("Analyse the current configuration to populate the event sequence.")
             return
 
         visual_model = build_recovery_visual_model(configuration)

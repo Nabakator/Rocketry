@@ -107,7 +107,7 @@ class MainWindowSmokeTests(unittest.TestCase):
         self.assertEqual(window.results_panel.tab_widget.tabText(1), "Compare")
         self.assertEqual(
             window.results_panel.comparison_note.text(),
-            "Create a second configuration to compare.",
+            "Create a second configuration to compare results.",
         )
 
         window.analyze_current_configuration()

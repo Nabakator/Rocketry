@@ -29,14 +29,14 @@ from drift.ui.display_units import (
 )
 from drift.ui.theme import SPACING, configure_box_layout, configure_form_layout, configure_grid_layout
 
-RECOVERY_MODE_ITEMS = [("single", "Single Deployment"), ("dual", "Dual Deployment")]
+RECOVERY_MODE_ITEMS = [("single", "Single"), ("dual", "Dual")]
 UNIT_SYSTEM_ITEMS = [("si", "SI"), ("imperial", "Imperial")]
 ATMOSPHERE_MODE_ITEMS = [
-    ("standard_atmosphere", "Standard Atmosphere"),
-    ("manual_density", "Manual Density Override"),
+    ("standard_atmosphere", "Standard atmosphere"),
+    ("manual_density", "Manual density override"),
 ]
-WIND_MODE_ITEMS = [("constant", "Constant Wind"), ("two_layer", "Two-Layer Wind")]
-CD_SOURCE_ITEMS = [("preset", "Preset"), ("manual_override", "Manual Override")]
+WIND_MODE_ITEMS = [("constant", "Constant wind"), ("two_layer", "Two-layer wind")]
+CD_SOURCE_ITEMS = [("preset", "Preset"), ("manual_override", "Manual override")]
 PARACHUTE_FAMILY_ITEMS = [
     ("flat_circular", "Flat Circular"),
     ("hemispherical", "Hemispherical"),
@@ -226,7 +226,7 @@ class InputPanel(QtWidgets.QWidget):
         atmosphere_form.addRow("Manual density", self.manual_density_spin)
         atmosphere_layout.addLayout(atmosphere_form)
         self.atmosphere_helper_label = QtWidgets.QLabel(
-            "Atmospheric density is computed from the ISA model unless manual density override is enabled."
+            "Air density is taken from the ISA model unless a manual override is active."
         )
         self.atmosphere_helper_label.setObjectName("atmosphereHelper")
         self.atmosphere_helper_label.setWordWrap(True)
@@ -250,7 +250,7 @@ class InputPanel(QtWidgets.QWidget):
         wind_form.addRow("Ground wind", self.ground_wind_spin)
         wind_layout.addLayout(wind_form)
         self.wind_helper_label = QtWidgets.QLabel(
-            "Drift is a first-order estimate. It assumes constant wind and vertical descent only."
+            "Drift is a first-order estimate based on wind speed and vertical descent only."
         )
         self.wind_helper_label.setObjectName("windHelper")
         self.wind_helper_label.setWordWrap(True)
@@ -258,7 +258,7 @@ class InputPanel(QtWidgets.QWidget):
         content_layout.addWidget(wind_box)
 
         self.note_label = QtWidgets.QLabel(
-            "Inputs are edited through the service-backed shell. Values are stored in canonical SI."
+            "Values are edited in the desktop shell and stored internally in SI units."
         )
         self.note_label.setProperty("role", "helper")
         self.note_label.setWordWrap(True)
@@ -269,7 +269,7 @@ class InputPanel(QtWidgets.QWidget):
         self.footer_widget.setObjectName("leftPanelFooter")
         footer_layout = QtWidgets.QVBoxLayout(self.footer_widget)
         configure_box_layout(footer_layout, margins=(SPACING.lg, SPACING.md, SPACING.lg, SPACING.lg))
-        self.panel_state_label = QtWidgets.QLabel("Inputs are valid. Analyse to generate engineering results.")
+        self.panel_state_label = QtWidgets.QLabel("Inputs are valid. Analyse to update the results.")
         self.panel_state_label.setObjectName("panelStateLabel")
         self.panel_state_label.setProperty("state", "valid")
         self.panel_state_label.setWordWrap(True)
@@ -369,7 +369,7 @@ class InputPanel(QtWidgets.QWidget):
         form.addRow("Family", family_combo)
         form.addRow("Cd source", cd_source_combo)
         form.addRow("Cd", cd_spin)
-        form.addRow("Target descent velocity", target_velocity_spin)
+        form.addRow("Target descent rate", target_velocity_spin)
         return {
             "box": box,
             "family": family_combo,

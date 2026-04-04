@@ -23,7 +23,7 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
     def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
         super().__init__(parent)
         self.setObjectName("recoverySchematicWidget")
-        self._message = "Analyse a configuration to render the recovery schematic."
+        self._message = "Analyse the current configuration to render the recovery schematic."
         self._model: RecoveryVisualModel | None = None
         self._unit_system = "si"
         self.setMinimumHeight(340)
@@ -73,7 +73,7 @@ class RecoverySchematicWidget(QtWidgets.QWidget):
         self._draw_badge(
             painter,
             QtCore.QRect(header_rect.right() - 132, header_rect.top(), 132, header_rect.height()),
-            f"Basis: {self._model.basis_label}",
+            f"Basis: {self._model.basis_label.replace('_', ' ').capitalize()}",
         )
 
         body_top = header_rect.bottom() + 12
