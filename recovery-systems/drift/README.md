@@ -10,7 +10,7 @@ DRIFT is a desktop application for amateur rocketry recovery-system design and f
 
 It exists because recovery work is usually treated as a sub-feature of a broader simulator, while recovery design often needs a faster and more focused workflow. DRIFT is intended to cover recovery-specific sizing, checks, comparison, and reporting without trying to replace a full flight simulator.
 
-Within Rocketry, the repository is organized by engineering domain first. DRIFT is the active tool inside the `recovery-systems` domain and is intended to remain self-contained so future recovery tools can live alongside it cleanly.
+Within Rocketry, the repository is organised by engineering domain first. DRIFT is the active tool inside the `recovery-systems` domain and is intended to remain self-contained so future recovery tools can live alongside it cleanly.
 
 ![DRIFT desktop UI](docs/examples/dual-deployment-demo/dual-deployment-demo.png)
 
@@ -44,7 +44,7 @@ DRIFT currently does not try to be:
 The current visuals are engineering schematics, not high-fidelity trajectory plots.
 They intentionally prioritise readable phase ordering and recovery sequence over physical scale.
 
-## Quickstart
+## Getting started
 
 From the repository root:
 
@@ -145,7 +145,7 @@ The `docs/` folder holds project notes that define the current MVP contract:
 - `docs/examples/`
   - example project files and reference screenshots for manual checks, demos, and README assets
 
-## Repository Context
+## Repository context
 
 - DRIFT is the active implementation for the `recovery-systems` domain.
 - It is intended to remain self-contained so future sibling tools can live alongside it under the same domain.
